@@ -1,0 +1,12 @@
+1. I work on a web application "mobile phone service and sales system", so firstly create only the following model classes: Customer, Phone, Order, Technician plus 3 other classes that would make sense with these ones. That is first task in Lab-1.md file, for beginning do just that one, follow the rules which are stated there, for example atleast 4 classes need to have +5 properties..
+2. I would like u to replace all ICollection data types, with for example Lists, please do following tasks based on knowledge from Lab-1.md (don't start with other tasks yet)
+3. Please explain and state 1:N and N:N relationships that you've created
+4. Continue and do next task in Lab-1.md which is to create atleast 3 main objects.. 
+5. I would prefer that you create object outside of main object creation, for example: phones for customers or first create objects customers and then put them in list customers..
+6. Can you now do the last task, create few meaningful LINQ queries, even better if they would maybe in future stages of project be used
+7. can you go through and explain to me this LINQ query? how does it work and what does every part of it do?
+8. Can you go through this project and explain to me correlations between object/models
+9. What is the difference between Order and OrderItem? Wouldn't it make more sense to have Order and Product or something that makes more sense than OrderItem?
+10. yes please create Product model, also update the LINQ queries in main program if needed so they would still work
+11. Can you change the name of this project from SustavZaServisIProdajuMobitela to MobilePhoneServiceAndSalesSystem
+12. Why are strings in Model classes initialized to string.empty?

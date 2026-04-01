@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "powershell.exe -ExecutionPolicy Bypass -File C:\\Users\\Dario\\Desktop\\faks\\6.semestar\\ASP.NET\\projekt\\.github\\hooks\\log.ps1"
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "powershell.exe -ExecutionPolicy Bypass -File C:\\Users\\Dario\\Desktop\\faks\\6.semestar\\ASP.NET\\projekt\\.github\\hooks\\log.ps1"
+      }
+    ]
+  }
+}

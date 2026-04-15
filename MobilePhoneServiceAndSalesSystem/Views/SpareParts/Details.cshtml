@@ -1,0 +1,74 @@
+@model MobilePhoneServiceAndSalesSystem.Models.SparePart
+
+@{
+    ViewData["Title"] = "Component Showcase";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row g-5 align-items-center">
+        <!-- Visual Presentation area -->
+        <div class="col-lg-5 text-center">
+            <div class="card bg-dark border border-secondary shadow-lg rounded-4 p-5" style="aspect-ratio: 1/1;">
+                <div class="d-flex h-100 flex-column justify-content-center align-items-center text-secondary position-relative">
+                   <div class="position-absolute top-50 start-50 translate-middle text-secondary opacity-10" style="font-size: 14rem;">
+                        <i class="bi bi-cpu"></i>
+                   </div>
+                    <div class="position-relative z-1">
+                        <i class="bi bi-cpu-fill text-primary mb-3" style="font-size: 6rem;"></i>
+                        <h4 class="text-light fw-bold">@Model.Manufacturer</h4>
+                        <span class="text-uppercase fw-bold text-secondary" style="letter-spacing: 2px;">PART-#@Model.Id</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part Specs & Action -->
+        <div class="col-lg-7">
+            <div class="d-flex flex-column h-100 justify-content-center ps-lg-4">
+                <span class="badge bg-secondary mb-3 align-self-start py-2 px-3 text-uppercase" style="letter-spacing: 1px;">Inventory / Component</span>
+                
+                <h1 class="display-5 fw-bold text-light mb-3">@Model.Name</h1>
+                
+                <div class="d-flex align-items-baseline gap-4 mb-5">
+                    <h2 class="text-success fw-bold mb-0 border-end border-secondary pe-4">@Model.Price EUR</h2>
+                    @if (Model.StockQuantity > 0)
+                    {
+                        <span class="text-light">
+                            <i class="bi bi-box-seam me-2 text-info"></i><strong class="fs-5">@Model.StockQuantity</strong> in stock
+                        </span>
+                    }
+                    else
+                    {
+                         <span class="text-danger fw-bold">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Depleted
+                        </span>
+                    }
+                </div>
+
+                <div class="card bg-black border-secondary rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-secondary text-uppercase fw-bold mb-0" style="font-size: 0.8rem; letter-spacing: 1px;"><i class="bi bi-tools me-2"></i>Usage Pipeline</h6>
+                            <span class="badge bg-primary rounded-pill">@Model.RepairJobs.Count Jobs</span>
+                        </div>
+                        
+                        @if(Model.RepairJobs.Count > 0)
+                        {
+                            <p class="text-light mb-0 small">This component is currently allocated or used in <strong>@Model.RepairJobs.Count</strong> repair service operations.</p>
+                        }
+                        else
+                        {
+                            <p class="text-secondary mb-0 small fst-italic">No active allocations.</p>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                     <a asp-controller="SpareParts" asp-action="Index" class="btn btn-outline-light rounded-pill px-5 py-2 fw-bold">
+                        <i class="bi bi-arrow-left me-2"></i>Inventory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

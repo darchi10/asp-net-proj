@@ -1,0 +1,126 @@
+@model MobilePhoneServiceAndSalesSystem.Models.RepairJob
+
+@{
+    ViewData["Title"] = "Service Ticket";
+}
+
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+    <div class="card bg-dark text-light border border-secondary shadow-lg rounded-4 overflow-hidden" style="max-width: 800px; width: 100%;">
+        
+        <!-- Ticket Header -->
+        <div class="row g-0 border-bottom border-secondary bg-black">
+            <div class="col-md-8 p-4 p-md-5">
+                <span class="badge bg-primary px-3 py-2 mb-3 text-uppercase" style="letter-spacing: 1px;">Service Ticket</span>
+                <h2 class="fw-bold mb-2">Job #@Model.Id</h2>
+                <p class="text-secondary fs-5 mb-0">@Model.Description</p>
+            </div>
+            <div class="col-md-4 bg-secondary bg-opacity-10 p-4 p-md-5 d-flex flex-column justify-content-center align-items-md-end text-md-end border-start border-secondary">
+                <span class="text-secondary text-uppercase fw-bold mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Status</span>
+                @{
+                    var badgeClass = Model.Status.ToString() switch {
+                        "Completed" => "bg-success",
+                        "InProgress" => "bg-warning text-dark",
+                        "Pending" => "bg-info text-dark",
+                        _ => "bg-secondary"
+                    };
+                }
+                <span class="badge @badgeClass fs-5 px-3 py-2 rounded-pill">@Model.Status</span>
+            </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <!-- Timeline details -->
+            <div class="row g-4 mb-5">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-3 bg-secondary bg-opacity-10 p-3 rounded-4">
+                        <div class="bg-dark rounded-circle p-2 border border-secondary">
+                            <i class="bi bi-calendar-arrow-down text-light fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-secondary small fw-bold text-uppercase">Received</span>
+                            <span class="fs-6 fw-bold">@Model.ReceivedDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center gap-3 bg-secondary bg-opacity-10 p-3 rounded-4">
+                         <div class="bg-dark rounded-circle p-2 border border-secondary">
+                            <i class="bi bi-calendar-check text-success fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-secondary small fw-bold text-uppercase">Completed</span>
+                            <span class="fs-6 fw-bold">@(Model.CompletedDate.HasValue ? Model.CompletedDate.Value.ToString("MMM dd, yyyy") : "Pending")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entities Involved -->
+             <div class="row g-4 mb-5">
+                <div class="col-md-6 border-end border-secondary">
+                    <h6 class="text-secondary text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Technician Assigned</h6>
+                    @if (Model.Technician != null)
+                    {
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; border-radius: 50%;">
+                                @Model.Technician.FirstName.FirstOrDefault()@Model.Technician.LastName.FirstOrDefault()
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">@Model.Technician.FirstName @Model.Technician.LastName</h6>
+                                <small class="text-secondary">@Model.Technician.Specialization</small>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted fst-italic mb-0">Unassigned</p>
+                    }
+                </div>
+                <div class="col-md-6 ps-md-4">
+                     <h6 class="text-secondary text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Target Device</h6>
+                     <div class="d-flex align-items-center gap-3">
+                         <i class="bi bi-phone text-secondary fs-3"></i>
+                         <div>
+                             <h6 class="mb-0 fw-bold">Device Ref #@Model.PhoneId</h6>
+                             <a asp-controller="Phones" asp-action="Details" asp-route-id="@Model.PhoneId" class="small text-info text-decoration-none">View Device</a>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Cost Breakdown -->
+            <div class="bg-black bg-opacity-50 p-4 rounded-4 border border-secondary">
+                <h6 class="text-light fw-bold mb-4 border-bottom border-secondary pb-3"><i class="bi bi-receipt me-2"></i>Cost Breakdown</h6>
+                
+                <div class="d-flex justify-content-between mb-3 text-secondary">
+                    <span>Labor Cost</span>
+                    <span>@Model.LaborCost EUR</span>
+                </div>
+
+                @if (Model.UsedParts.Count > 0)
+                {
+                    <strong class="d-block text-light mb-2 mt-4">Hardware Replacements</strong>
+                    @foreach (var part in Model.UsedParts)
+                    {
+                        <div class="d-flex justify-content-between mb-2 text-secondary">
+                            <span>@part.Name <small>(@part.Manufacturer)</small></span>
+                            <span>@part.Price EUR</span>
+                        </div>
+                    }
+                }
+                
+                <div class="d-flex justify-content-between mt-4 border-top border-secondary pt-3">
+                    <strong class="text-uppercase" style="letter-spacing: 1px;">Total Service Cost</strong>
+                    <strong class="text-success fs-5">@(Model.LaborCost + Model.UsedParts.Sum(p => p.Price)) EUR</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4 mb-5">
+    <a asp-controller="RepairJobs" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+        <i class="bi bi-arrow-left me-2"></i>Back to Active Jobs
+    </a>
+</div>

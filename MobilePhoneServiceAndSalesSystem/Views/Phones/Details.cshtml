@@ -1,0 +1,104 @@
+@model MobilePhoneServiceAndSalesSystem.Models.Phone
+
+@{
+    ViewData["Title"] = "Phone Specs";
+}
+
+<div class="container mt-5 mb-5">
+    <!-- Showcase Header -->
+    <div class="card bg-black text-light border-0 rounded-4 shadow-lg overflow-hidden position-relative mb-4">
+        <div class="position-absolute top-0 end-0 p-4 opacity-25">
+             <i class="bi bi-phone" style="font-size: 15rem;"></i>
+        </div>
+        <div class="card-body p-5 position-relative z-1">
+            <span class="badge bg-primary text-uppercase letter-spacing-1 mb-3 px-3 py-2">Device Info</span>
+            <h1 class="display-4 fw-bold mb-1">@Model.Brand @Model.Model</h1>
+            <p class="lead text-secondary mb-4">@Model.OperatingSystem &bull; @Model.YearOfManufacture</p>
+            
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-secondary bg-opacity-25 px-4 py-2 rounded-3 border border-secondary">
+                    <span class="text-secondary d-block" style="font-size: 0.8rem;">IMEI Number</span>
+                    <span class="fw-mono fs-5">@Model.IMEI</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Owner Details -->
+        <div class="col-lg-4">
+            <div class="card bg-dark text-light border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4 border-bottom border-secondary pb-3">Ownership</h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-person-fill text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-secondary small">Registered To</span>
+                            @if (Model.Customer != null)
+                            {
+                                <span class="fw-bold fs-5">@Model.Customer.FirstName @Model.Customer.LastName</span>
+                            }
+                            else
+                            {
+                                <span class="fw-bold fs-5 text-muted">Unassigned</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service History -->
+        <div class="col-lg-8">
+            <div class="card bg-dark text-light border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+                        <h5 class="fw-bold mb-0">Repair History</h5>
+                        <span class="badge bg-secondary rounded-pill">@Model.RepairJobs.Count Jobs</span>
+                    </div>
+
+                    @if (Model.RepairJobs.Count > 0)
+                    {
+                        <div class="timeline position-relative ps-4 border-start border-secondary">
+                            @foreach (var job in Model.RepairJobs.OrderByDescending(j => j.ReceivedDate))
+                            {
+                                <div class="timeline-item position-relative mb-4">
+                                    <div class="position-absolute bg-primary rounded-circle" style="width: 12px; height: 12px; left: -31px; top: 5px; box-shadow: 0 0 0 4px #212529;"></div>
+                                    <div class="bg-secondary bg-opacity-10 rounded-3 p-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-bold text-info">#@job.Id</span>
+                                            <small class="text-secondary">@job.ReceivedDate.ToString("MMM dd, yyyy")</small>
+                                        </div>
+                                        <p class="mb-2">@job.Description</p>
+                                        <div class="mt-2">
+                                            @{
+                                                var statusBadge = job.Status.ToString() == "Completed" ? "bg-success" :
+                                                                  job.Status.ToString() == "InProgress" ? "bg-warning text-dark" : "bg-secondary";
+                                            }
+                                            <span class="badge @statusBadge">@job.Status</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-secondary">
+                            <i class="bi bi-clipboard-check display-4 d-block mb-3"></i>
+                            <p class="mb-0">No repair service history</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-controller="Phones" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>Back to Inventory
+        </a>
+    </div>
+</div>

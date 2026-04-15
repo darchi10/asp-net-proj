@@ -1,0 +1,68 @@
+@model MobilePhoneServiceAndSalesSystem.Models.Order
+
+@{
+    ViewData["Title"] = "Digital Receipt";
+}
+
+<div class="container mt-5 mb-5 d-flex justify-content-center">
+    <div class="card shadow border-0 bg-dark text-light rounded-4" style="max-width: 600px; width: 100%;">
+        <!-- Receipt Header -->
+        <div class="card-header bg-black text-center p-5 rounded-top-4 border-bottom border-secondary">
+            <div class="mb-3">
+                <i class="bi bi-cart-check-fill text-success" style="font-size: 3rem;"></i>
+            </div>
+            <h3 class="fw-bold mb-1">Order Invoice</h3>
+            <p class="text-secondary mb-0">#@Model.Id &bull; @Model.OrderDate.ToString("MMMM dd, yyyy")</p>
+        </div>
+
+        <!-- Customer Details -->
+        <div class="card-body p-5">
+            <div class="row mb-5">
+                <div class="col-sm-6">
+                    <span class="text-secondary text-uppercase fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">Billed To</span>
+                    <h6 class="mt-2 mb-1 fw-bold">@(Model.Customer is null ? "Guest" : $"{Model.Customer.FirstName} {Model.Customer.LastName}")</h6>
+                </div>
+                <div class="col-sm-6 text-sm-end mt-4 mt-sm-0">
+                    <span class="text-secondary text-uppercase fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">Shipped To</span>
+                    <p class="mt-2 mb-0" style="font-size: 0.9rem;">@Model.ShippingAddress</p>
+                </div>
+            </div>
+
+            <!-- Items -->
+            <span class="text-secondary text-uppercase fw-bold d-block mb-3" style="font-size: 0.8rem; letter-spacing: 1px;">Order Summary</span>
+            <div class="border-top border-secondary pt-3">
+                @if (Model.OrderItems.Count > 0)
+                {
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="mb-0 fw-bold">@(item.Product?.Name ?? "Unknown Product")</h6>
+                                <small class="text-secondary">Qty: @item.Quantity &times; @item.UnitPrice EUR</small>
+                            </div>
+                            <span class="fw-bold">@(item.Quantity * item.UnitPrice) EUR</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-secondary text-center py-3">No items found in this order.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Receipt Footer -->
+        <div class="card-footer bg-secondary bg-opacity-10 p-5 rounded-bottom-4 border-0">
+            <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-4">
+                <h4 class="mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Total</h4>
+                <h3 class="mb-0 fw-bold text-success">@Model.TotalAmount EUR</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+        <i class="bi bi-arrow-left me-2"></i>Back to Orders
+    </a>
+</div>

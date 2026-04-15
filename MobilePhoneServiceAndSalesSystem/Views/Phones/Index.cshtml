@@ -1,0 +1,85 @@
+@model IEnumerable<MobilePhoneServiceAndSalesSystem.Models.Phone>
+
+@{
+    ViewData["Title"] = "Phones";
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-state text-center py-5 rounded-4 shadow-sm border border-secondary bg-dark text-muted">
+        <div class="display-4 mb-3">
+            <i class="bi bi-phone text-secondary"></i>
+        </div>
+        <h3 class="fw-light">No phones found</h3>
+        <p class="mb-4">No phones have been registered in the system yet.</p>
+        <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Register a phone</a>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary">
+        <div>
+            <h2 class="h3 mb-0 text-white"><i class="bi bi-phone me-2 text-primary"></i>Registered Phones</h2>
+            <p class="text-muted small mb-0 mt-1">Manage customer devices in the system</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-circle me-2"></i>Register Phone
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var phone in Model)
+        {
+            <div class="col">
+                <div class="card bg-dark text-light border-secondary h-100 shadow-sm custom-card-hover" onclick="window.location='@Url.Action("Details", "Phones", new { id = phone.Id })'" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-2 rounded-pill">@phone.Brand</span>
+                            <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary px-3 py-2 rounded-pill"><i class="bi bi-cpu me-2"></i>@phone.OperatingSystem</span>
+                        </div>
+                        
+                        <h5 class="card-title fw-bold text-white mb-2">
+                            @phone.Model <span class="text-muted fw-normal ms-1 fs-6">(@phone.YearOfManufacture)</span>
+                        </h5>
+                        <p class="card-text text-muted mb-3 small flex-grow-1">
+                            <strong>IMEI:</strong> <span class="font-monospace text-secondary bg-dark border border-secondary px-2 py-1 rounded">@phone.IMEI</span>
+                        </p>
+
+                        <div class="mb-3 p-2 rounded bg-opacity-10 bg-secondary border border-secondary border-opacity-50">
+                            <span class="d-block text-muted small mb-1 fw-bold">Owner / Customer</span>
+                            <div class="text-light fs-6 d-flex align-items-center">
+                                <i class="bi bi-person-circle me-2 text-secondary"></i>
+                                @(phone.Customer is null ? "Unknown" : $"{phone.Customer.FirstName} {phone.Customer.LastName}")
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto border-top border-secondary pt-3">
+                            <span class="badge bg-dark border border-secondary text-secondary px-3 py-2 rounded-pill">ID: #@phone.Id</span>
+                            <div class="text-end">
+                                @if (phone.RepairJobs.Count > 0)
+                                {
+                                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2 rounded-pill"><i class="bi bi-wrench me-1"></i> @phone.RepairJobs.Count Active Repairs</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1"></i> No Active Repairs</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .custom-card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.3)!important;
+        border-color: var(--bs-primary) !important;
+    }
+    .empty-state {
+        background: linear-gradient(145deg, #1e1e24, #121215);
+    }
+</style>

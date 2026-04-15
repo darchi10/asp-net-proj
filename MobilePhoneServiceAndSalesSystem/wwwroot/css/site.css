@@ -1,5 +1,18 @@
+:root {
+  --bg-dark: #0f1115;
+  --bg-card: #1c1f26;
+  --bg-card-hover: #252932;
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a5b0;
+  --accent-color: #3b82f6;
+  --accent-hover: #60a5fa;
+  --border-color: #2e333e;
+}
+
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,24 +21,102 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+  margin-bottom: 0px;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--bg-card) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.navbar-brand, .nav-link {
+  color: var(--text-primary) !important;
+}
+
+.nav-link:hover {
+  color: var(--accent-hover) !important;
+}
+
+.nav-link.active {
+  color: var(--accent-color) !important;
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 6px;
+}
+
+/* Cards */
+.retail-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.retail-card:hover {
+  transform: translateY(-4px);
+  background-color: var(--bg-card-hover);
+  border-color: var(--accent-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.retail-card-icon {
+  font-size: 2.5rem;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+}
+
+.retail-card-title {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.retail-card-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Footers */
+.footer {
+  border-top: 1px solid var(--border-color) !important;
+  background-color: var(--bg-card);
+  color: var(--text-secondary) !important;
+}
+
+/* Fix Focus Defaults */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem var(--bg-dark), 0 0 0 0.25rem var(--accent-color);
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
+  color: var(--text-secondary);
   text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* Custom CSS overrides for dark theme contrast */
+.bg-dark.text-muted, .bg-dark .text-muted, .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.bg-dark.text-secondary, .bg-dark .text-secondary, .text-secondary {
+  color: #d1d5db !important;
+}
+
+.bg-dark.text-dark, .bg-dark .text-dark, .text-dark {
+  color: var(--text-primary) !important;
+}
+
+.bg-dark.border-secondary, .bg-dark .border-secondary, .border-secondary {
+  border-color: var(--border-color) !important;
 }

@@ -9,29 +9,56 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MobilePhoneServiceAndSalesSystem.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    }
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MobilePhoneServiceAndSalesSystem</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-4">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="text-primary">Mobi</span>Service
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-center">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link px-3 @(currentController == "Home" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link px-3 @(currentController == "Customers" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="Customers" asp-action="Index">Customers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentController == "Phones" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="Phones" asp-action="Index">Phones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentController == "RepairJobs" && currentAction != "Tracker" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="RepairJobs" asp-action="Index">Repairs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 fw-medium @(currentController == "RepairJobs" && currentAction == "Tracker" ? "active fw-bold text-primary" : "text-warning")" asp-area="" asp-controller="RepairJobs" asp-action="Tracker">Track Repair</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentController == "SpareParts" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="SpareParts" asp-action="Index">Spare Parts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentController == "Products" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="Products" asp-action="Index">Store</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentController == "Orders" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="Orders" asp-action="Index">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 @(currentController == "Technicians" ? "active fw-semibold" : string.Empty)" asp-area="" asp-controller="Technicians" asp-action="Index">Technicians</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -39,7 +66,9 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - MobilePhoneServiceAndSalesSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <span>&copy; 2026 - MobilePhoneServiceAndSalesSystem</span>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

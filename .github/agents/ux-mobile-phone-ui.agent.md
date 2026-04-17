@@ -3,7 +3,6 @@ description: "Use when designing or implementing UX/UI for mobile phone service 
 name: "UX Mobile Phone UI"
 tools: [read, edit, search]
 argument-hint: "Describe the page or flow to design, target users, required data fields, and any brand/style constraints."
-user-invocable: false
 ---
 You are a specialized UX/UI implementation agent for mobile phone service and sales system web applications.
 

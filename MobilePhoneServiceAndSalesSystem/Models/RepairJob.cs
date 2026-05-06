@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using MobilePhoneServiceAndSalesSystem.Models.Enums;
 
 namespace MobilePhoneServiceAndSalesSystem.Models
 {
     public class RepairJob
     {
+        [Key]
         public int Id { get; set; }
         public string Description { get; set; } = string.Empty;
         public RepairStatus Status { get; set; }
@@ -13,12 +16,14 @@ namespace MobilePhoneServiceAndSalesSystem.Models
         public DateTime? CompletedDate { get; set; }
         public decimal LaborCost { get; set; }
 
+        [ForeignKey("Phone")]
         public int PhoneId { get; set; }
-        public Phone? Phone { get; set; }
+        public virtual Phone? Phone { get; set; }
 
+        [ForeignKey("Technician")]
         public int TechnicianId { get; set; }
-        public Technician? Technician { get; set; }
+        public virtual Technician? Technician { get; set; }
 
-        public List<SparePart> UsedParts { get; set; } = new List<SparePart>();
+        public virtual ICollection<SparePart> UsedParts { get; set; } = new List<SparePart>();
     }
 }

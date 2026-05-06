@@ -4,19 +4,24 @@ using System.Diagnostics;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
+    [Route("home")]
     public class HomeController : Controller
     {
+        [Route("")]
+        [Route("/")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Route("privacy")]
         public IActionResult Privacy()
         {
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [Route("error")]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

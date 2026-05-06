@@ -1,26 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
-using MobilePhoneServiceAndSalesSystem.Models.Repositories;
+using Microsoft.EntityFrameworkCore;
+using MobilePhoneServiceAndSalesSystem.DAL;
+using MobilePhoneServiceAndSalesSystem.Models;
 using System.Linq;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
+    [Route("spare-parts")]
     public class SparePartsController : Controller
     {
-        private readonly ISparePartMockRepository _sparePartMockRepository;
+        private readonly AppDbContext _dbContext;
 
-        public SparePartsController(ISparePartMockRepository sparePartMockRepository)
+        public SparePartsController(AppDbContext dbContext)
         {
-            _sparePartMockRepository = sparePartMockRepository;
+            _dbContext = dbContext;
         }
 
+        [Route("")]
         public IActionResult Index()
         {
-            return View(_sparePartMockRepository.Items);
+            var spareParts = _dbContext.SpareParts
+                .Include(sp => sp.RepairJobs)
+                .ToList();
+
+            return View(spareParts);
         }
 
+        [Route("{id:int}")]
         public IActionResult Details(int id)
         {
-            var sparePart = _sparePartMockRepository.Items.FirstOrDefault(s => s.Id == id);
+            var sparePart = _dbContext.SpareParts
+                .Include(sp => sp.RepairJobs)
+                .FirstOrDefault(sp => sp.Id == id);
 
             if (sparePart is null)
             {
@@ -28,6 +39,62 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             }
 
             return View(sparePart);
+        }
+
+        [HttpGet]
+        [Route("create")]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("create")]
+        public IActionResult Create(SparePart sparePart)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(sparePart);
+            }
+
+            _dbContext.SpareParts.Add(sparePart);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Route("edit/{id:int}")]
+        public IActionResult Edit(int id)
+        {
+            var sparePart = _dbContext.SpareParts.Find(id);
+
+            if (sparePart is null)
+            {
+                return NotFound();
+            }
+
+            return View(sparePart);
+        }
+
+        [HttpPost]
+        [Route("edit/{id:int}")]
+        public IActionResult Edit(int id, SparePart sparePart)
+        {
+            if (id != sparePart.Id)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(sparePart);
+            }
+
+            _dbContext.SpareParts.Update(sparePart);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

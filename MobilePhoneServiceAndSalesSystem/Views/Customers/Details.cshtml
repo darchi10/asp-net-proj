@@ -120,7 +120,7 @@
                                         <span class="badge bg-primary">Order #@order.Id</span>
                                         <small class="text-secondary">@order.OrderDate.ToString("MMM dd, yyyy")</small>
                                     </div>
-                                    <h6 class="mb-0 fw-bold text-success">@order.TotalAmount EUR</h6>
+                                    <h6 class="mb-0 fw-bold text-success">@order.TotalAmount.ToString("0.00") EUR</h6>
                                 </div>
                                 <i class="bi bi-chevron-right text-secondary"></i>
                             </div>
@@ -139,6 +139,9 @@
     </div>
     
     <div class="mt-4">
+        <a asp-controller="Customers" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-4 me-2">
+            <i class="bi bi-pencil-square me-2"></i>Edit Customer
+        </a>
         <a asp-controller="Customers" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
             <i class="bi bi-arrow-left me-2"></i>Back to Directory
         </a>

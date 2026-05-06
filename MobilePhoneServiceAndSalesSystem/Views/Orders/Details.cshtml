@@ -38,9 +38,9 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
                                 <h6 class="mb-0 fw-bold">@(item.Product?.Name ?? "Unknown Product")</h6>
-                                <small class="text-secondary">Qty: @item.Quantity &times; @item.UnitPrice EUR</small>
+                                <small class="text-secondary">Qty: @item.Quantity &times; @item.UnitPrice.ToString("0.00") EUR</small>
                             </div>
-                            <span class="fw-bold">@(item.Quantity * item.UnitPrice) EUR</span>
+                            <span class="fw-bold">@((item.Quantity * item.UnitPrice).ToString("0.00")) EUR</span>
                         </div>
                     }
                 }
@@ -55,13 +55,16 @@
         <div class="card-footer bg-secondary bg-opacity-10 p-5 rounded-bottom-4 border-0">
             <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-4">
                 <h4 class="mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Total</h4>
-                <h3 class="mb-0 fw-bold text-success">@Model.TotalAmount EUR</h3>
+                <h3 class="mb-0 fw-bold text-success">@Model.TotalAmount.ToString("0.00") EUR</h3>
             </div>
         </div>
     </div>
 </div>
 
 <div class="text-center mt-4">
+    <a asp-controller="Orders" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-4 me-2">
+        <i class="bi bi-pencil-square me-2"></i>Edit Order
+    </a>
     <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
         <i class="bi bi-arrow-left me-2"></i>Back to Orders
     </a>

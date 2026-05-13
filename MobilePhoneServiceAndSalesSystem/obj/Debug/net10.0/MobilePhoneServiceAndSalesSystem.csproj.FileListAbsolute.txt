@@ -184,5 +184,5 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-obmx4ii7mg-obmx4ii7mg.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\or4pea7v0x-{0}-r8bxbu4ht2-r8bxbu4ht2.gz
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-99njjqoi4c-99njjqoi4c.gz

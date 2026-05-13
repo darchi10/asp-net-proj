@@ -105,4 +105,106 @@
 			}, 250);
 		});
 	}
+
+	const technicianSearchInput = document.getElementById("technician-search");
+	const technicianResults = document.getElementById("technician-results");
+	if (technicianSearchInput && technicianResults) {
+		let timer = null;
+		technicianSearchInput.addEventListener("input", function () {
+			clearTimeout(timer);
+			const term = technicianSearchInput.value.trim();
+			timer = setTimeout(function () {
+				fetch(`/technicians/search-list?term=${encodeURIComponent(term)}`)
+					.then(response => response.ok ? response.text() : "")
+					.then(html => {
+						technicianResults.innerHTML = html;
+					});
+			}, 250);
+		});
+	}
+
+	const productSearchInput = document.getElementById("product-search");
+	const productResults = document.getElementById("product-results");
+	if (productSearchInput && productResults) {
+		let timer = null;
+		productSearchInput.addEventListener("input", function () {
+			clearTimeout(timer);
+			const term = productSearchInput.value.trim();
+			timer = setTimeout(function () {
+				fetch(`/products/search-list?term=${encodeURIComponent(term)}`)
+					.then(response => response.ok ? response.text() : "")
+					.then(html => {
+						productResults.innerHTML = html;
+					});
+			}, 250);
+		});
+	}
+
+	const sparePartSearchInput = document.getElementById("spare-part-search");
+	const sparePartResults = document.getElementById("spare-part-results");
+	if (sparePartSearchInput && sparePartResults) {
+		let timer = null;
+		sparePartSearchInput.addEventListener("input", function () {
+			clearTimeout(timer);
+			const term = sparePartSearchInput.value.trim();
+			timer = setTimeout(function () {
+				fetch(`/spare-parts/search-list?term=${encodeURIComponent(term)}`)
+					.then(response => response.ok ? response.text() : "")
+					.then(html => {
+						sparePartResults.innerHTML = html;
+					});
+			}, 250);
+		});
+	}
+
+	const phoneSearchInput = document.getElementById("phone-search");
+	const phoneResults = document.getElementById("phone-results");
+	if (phoneSearchInput && phoneResults) {
+		let timer = null;
+		phoneSearchInput.addEventListener("input", function () {
+			clearTimeout(timer);
+			const term = phoneSearchInput.value.trim();
+			timer = setTimeout(function () {
+				fetch(`/phones/search-list?term=${encodeURIComponent(term)}`)
+					.then(response => response.ok ? response.text() : "")
+					.then(html => {
+						phoneResults.innerHTML = html;
+					});
+			}, 250);
+		});
+	}
+
+	const orderSearchInput = document.getElementById("order-search");
+	const orderResults = document.getElementById("order-results");
+	if (orderSearchInput && orderResults) {
+		let timer = null;
+		orderSearchInput.addEventListener("input", function () {
+			clearTimeout(timer);
+			const term = orderSearchInput.value.trim();
+			timer = setTimeout(function () {
+				fetch(`/orders/search-list?term=${encodeURIComponent(term)}`)
+					.then(response => response.ok ? response.text() : "")
+					.then(html => {
+						orderResults.innerHTML = html;
+					});
+			}, 250);
+		});
+	}
+
+	const repairJobSearchInput = document.getElementById("repair-job-search");
+	const repairJobResults = document.getElementById("repair-job-results");
+	if (repairJobSearchInput && repairJobResults) {
+		let timer = null;
+		repairJobSearchInput.addEventListener("input", function () {
+			clearTimeout(timer);
+			const term = repairJobSearchInput.value.trim();
+			timer = setTimeout(function () {
+				fetch(`/repair-jobs/search-list?term=${encodeURIComponent(term)}`)
+					.then(response => response.ok ? response.text() : "")
+					.then(html => {
+						repairJobResults.innerHTML = html;
+					});
+			}, 250);
+		});
+	}
 })();

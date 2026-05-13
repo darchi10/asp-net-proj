@@ -44,6 +44,21 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [HttpGet]
+        [Route("search-list")]
+        public IActionResult SearchList(string? term)
+        {
+            var query = term?.Trim() ?? string.Empty;
+
+            var technicians = _dbContext.Technicians
+                .Where(t => !t.IsDeleted
+                    && (t.FirstName + " " + t.LastName).Contains(query))
+                .Include(t => t.RepairJobs)
+                .ToList();
+
+            return PartialView("_TechnicianCards", technicians);
+        }
+
+        [HttpGet]
         [Route("create")]
         public IActionResult Create()
         {

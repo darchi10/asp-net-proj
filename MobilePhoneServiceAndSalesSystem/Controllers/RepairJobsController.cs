@@ -72,6 +72,22 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [HttpGet]
+        [Route("search-list")]
+        public IActionResult SearchList(string? term)
+        {
+            var query = term?.Trim() ?? string.Empty;
+
+            var repairJobs = _dbContext.RepairJobs
+                .Where(rj => !rj.IsDeleted
+                    && (rj.Description + " " + rj.Technician.FirstName + " " + rj.Technician.LastName).Contains(query))
+                .Include(rj => rj.Technician)
+                .Include(rj => rj.UsedParts)
+                .ToList();
+
+            return PartialView("_RepairJobCards", repairJobs);
+        }
+
+        [HttpGet]
         [Route("create")]
         public IActionResult Create()
         {

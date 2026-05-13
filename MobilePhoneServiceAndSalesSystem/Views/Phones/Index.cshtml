@@ -34,49 +34,21 @@ else
         </a>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var phone in Model)
-        {
-            <div class="col">
-                <div class="card bg-dark text-light border-secondary h-100 shadow-sm custom-card-hover" onclick="window.location='@Url.Action("Details", "Phones", new { id = phone.Id })'" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="badge bg-info bg-opacity-25 text-info border border-info px-3 py-2 rounded-pill">@phone.Brand</span>
-                            <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary px-3 py-2 rounded-pill"><i class="bi bi-cpu me-2"></i>@phone.OperatingSystem</span>
-                        </div>
-                        
-                        <h5 class="card-title fw-bold text-white mb-2">
-                            @phone.Model <span class="text-muted fw-normal ms-1 fs-6">(@phone.YearOfManufacture)</span>
-                        </h5>
-                        <p class="card-text text-muted mb-3 small flex-grow-1">
-                            <strong>IMEI:</strong> <span class="font-monospace text-secondary bg-dark border border-secondary px-2 py-1 rounded">@phone.IMEI</span>
-                        </p>
-
-                        <div class="mb-3 p-2 rounded bg-opacity-10 bg-secondary border border-secondary border-opacity-50">
-                            <span class="d-block text-muted small mb-1 fw-bold">Owner / Customer</span>
-                            <div class="text-light fs-6 d-flex align-items-center">
-                                <i class="bi bi-person-circle me-2 text-secondary"></i>
-                                @(phone.Customer is null ? "Unknown" : $"{phone.Customer.FirstName} {phone.Customer.LastName}")
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mt-auto border-top border-secondary pt-3">
-                            <span class="badge bg-dark border border-secondary text-secondary px-3 py-2 rounded-pill">ID: #@phone.Id</span>
-                            <div class="text-end">
-                                @if (phone.RepairJobs.Count > 0)
-                                {
-                                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2 rounded-pill"><i class="bi bi-wrench me-1"></i> @phone.RepairJobs.Count Active Repairs</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1"></i> No Active Repairs</span>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6">
+            <div class="form-floating">
+                <input id="phone-search"
+                       type="text"
+                       class="form-control bg-black text-light border-secondary focus-ring-primary"
+                       placeholder=" "
+                       autocomplete="off" />
+                <label for="phone-search" class="text-secondary">Search phones</label>
             </div>
-        }
+        </div>
+    </div>
+
+    <div id="phone-results">
+        @await Html.PartialAsync("_PhoneCards", Model)
     </div>
 }
 

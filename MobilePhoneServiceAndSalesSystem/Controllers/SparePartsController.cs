@@ -44,6 +44,21 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [HttpGet]
+        [Route("search-list")]
+        public IActionResult SearchList(string? term)
+        {
+            var query = term?.Trim() ?? string.Empty;
+
+            var spareParts = _dbContext.SpareParts
+                .Where(sp => !sp.IsDeleted
+                    && (sp.Name + " " + sp.Manufacturer).Contains(query))
+                .Include(sp => sp.RepairJobs)
+                .ToList();
+
+            return PartialView("_SparePartCards", spareParts);
+        }
+
+        [HttpGet]
         [Route("create")]
         public IActionResult Create()
         {

@@ -49,6 +49,22 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [HttpGet]
+        [Route("search-list")]
+        public IActionResult SearchList(string? term)
+        {
+            var query = term?.Trim() ?? string.Empty;
+
+            var orders = _dbContext.Orders
+                .Where(o => !o.IsDeleted
+                    && (o.ShippingAddress + " " + o.Customer.FirstName + " " + o.Customer.LastName).Contains(query))
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)
+                .ToList();
+
+            return PartialView("_OrderCards", orders);
+        }
+
+        [HttpGet]
         [Route("create")]
         public IActionResult Create()
         {

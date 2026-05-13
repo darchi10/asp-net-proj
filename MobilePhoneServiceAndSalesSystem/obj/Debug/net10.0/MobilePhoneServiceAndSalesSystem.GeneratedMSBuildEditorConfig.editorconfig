@@ -82,6 +82,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Orders/_OrderCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXF9PcmRlckNhcmRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Phones/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhvbmVzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -102,6 +106,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhvbmVzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Phones/_PhoneCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhvbmVzXF9QaG9uZUNhcmRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Products/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdHNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -120,6 +128,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Products/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Products/_ProductCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdHNcX1Byb2R1Y3RDYXJkcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/RepairJobs/Create.cshtml]
@@ -144,6 +156,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/RepairJobs/Tracker.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwYWlySm9ic1xUcmFja2VyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/RepairJobs/_RepairJobCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwYWlySm9ic1xfUmVwYWlySm9iQ2FyZHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Shared/Error.cshtml]
@@ -178,6 +194,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BhcmVQYXJ0c1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/SpareParts/_SparePartCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BhcmVQYXJ0c1xfU3BhcmVQYXJ0Q2FyZHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Technicians/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVjaG5pY2lhbnNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -196,6 +216,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Technicians/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVjaG5pY2lhbnNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Technicians/_TechnicianCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVjaG5pY2lhbnNcX1RlY2huaWNpYW5DYXJkcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/_ViewImports.cshtml]

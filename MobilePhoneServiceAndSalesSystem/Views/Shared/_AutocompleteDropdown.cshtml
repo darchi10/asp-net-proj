@@ -1,0 +1,36 @@
+@model MobilePhoneServiceAndSalesSystem.Models.AutocompleteSelectViewModel
+
+@{
+    var inputId = Model.InputName + "_text";
+    var selectedId = Model.SelectedId.HasValue && Model.SelectedId.Value > 0
+        ? Model.SelectedId.Value.ToString()
+        : string.Empty;
+    var selectedText = Model.SelectedText ?? string.Empty;
+    var placeholder = string.IsNullOrWhiteSpace(Model.Placeholder)
+        ? "Start typing..."
+        : Model.Placeholder;
+    var requiredMessage = string.IsNullOrWhiteSpace(Model.RequiredMessage)
+        ? "Selection is required."
+        : Model.RequiredMessage;
+}
+
+<div class="autocomplete" data-endpoint="@Model.EndpointUrl" data-min-length="2">
+    <div class="form-floating">
+         <input id="@inputId"
+             type="text"
+             class="form-control bg-black text-light border-secondary focus-ring-primary autocomplete-input"
+             placeholder=" "
+             aria-label="@placeholder"
+             value="@selectedText"
+             autocomplete="off" />
+        <label for="@inputId" class="text-secondary">@Model.Label</label>
+    </div>
+    <input type="hidden"
+           name="@Model.InputName"
+           value="@selectedId"
+           class="autocomplete-id"
+           data-val="true"
+           data-val-required="@requiredMessage" />
+    <div class="autocomplete-menu"></div>
+    @Html.ValidationMessage(Model.InputName, "", new { @class = "text-danger small mt-1 d-block ms-1" })
+</div>

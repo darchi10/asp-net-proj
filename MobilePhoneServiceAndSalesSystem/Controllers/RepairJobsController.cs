@@ -22,6 +22,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Index()
         {
             var repairJobs = _dbContext.RepairJobs
+                .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.Technician)
                 .Include(rj => rj.UsedParts)
                 .ToList();
@@ -37,6 +38,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             if (searchId.HasValue)
             {
                 var repairJob = _dbContext.RepairJobs
+                    .Where(rj => !rj.IsDeleted)
                     .Include(rj => rj.Phone)
                     .Include(rj => rj.Technician)
                     .FirstOrDefault(rj => rj.Id == searchId.Value);
@@ -56,6 +58,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Details(int id)
         {
             var repairJob = _dbContext.RepairJobs
+                .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.Technician)
                 .Include(rj => rj.UsedParts)
                 .FirstOrDefault(rj => rj.Id == id);
@@ -99,6 +102,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Edit(int id)
         {
             var repairJob = _dbContext.RepairJobs
+                .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.UsedParts)
                 .FirstOrDefault(rj => rj.Id == id);
 
@@ -121,6 +125,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             }
 
             var existingJob = _dbContext.RepairJobs
+                .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.UsedParts)
                 .FirstOrDefault(rj => rj.Id == id);
 
@@ -149,21 +154,84 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        [Route("delete/{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var repairJob = _dbContext.RepairJobs
+                .Where(rj => !rj.IsDeleted)
+                .Include(rj => rj.UsedParts)
+                .FirstOrDefault(rj => rj.Id == id);
+
+            if (repairJob is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.HasDependencies = repairJob.UsedParts.Any();
+            return View(repairJob);
+        }
+
+        [HttpPost]
+        [Route("delete/{id:int}")]
+        [ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id, string deleteMode)
+        {
+            var repairJob = _dbContext.RepairJobs
+                .Include(rj => rj.UsedParts)
+                .FirstOrDefault(rj => rj.Id == id && !rj.IsDeleted);
+
+            if (repairJob is null)
+            {
+                return NotFound();
+            }
+
+            var hasDependencies = repairJob.UsedParts.Any();
+            if (hasDependencies
+                && !string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(deleteMode, "hard", System.StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Choose a delete option for records with related data.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase))
+            {
+                repairJob.IsDeleted = true;
+                repairJob.DeletedAt = System.DateTime.UtcNow;
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (repairJob.UsedParts.Any())
+            {
+                repairJob.UsedParts.Clear();
+            }
+
+            _dbContext.RepairJobs.Remove(repairJob);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private void PopulateLookups(int? phoneId = null, int? technicianId = null, IEnumerable<int>? usedPartIds = null)
         {
             var phones = _dbContext.Phones
+                .Where(p => !p.IsDeleted)
                 .OrderBy(p => p.Brand)
                 .ThenBy(p => p.Model)
                 .Select(p => new { p.Id, Label = p.Brand + " " + p.Model + " (" + p.IMEI + ")" })
                 .ToList();
 
             var technicians = _dbContext.Technicians
+                .Where(t => !t.IsDeleted)
                 .OrderBy(t => t.LastName)
                 .ThenBy(t => t.FirstName)
                 .Select(t => new { t.Id, Name = t.FirstName + " " + t.LastName })
                 .ToList();
 
             var spareParts = _dbContext.SpareParts
+                .Where(sp => !sp.IsDeleted)
                 .OrderBy(sp => sp.Name)
                 .Select(sp => new { sp.Id, Label = sp.Name + " (" + sp.Manufacturer + ")" })
                 .ToList();

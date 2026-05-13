@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
@@ -21,6 +20,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Index()
         {
             var phones = _dbContext.Phones
+                .Where(p => !p.IsDeleted)
                 .Include(p => p.Customer)
                 .Include(p => p.RepairJobs)
                 .ToList();
@@ -32,6 +32,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Details(int id)
         {
             var phone = _dbContext.Phones
+                .Where(p => !p.IsDeleted)
                 .Include(p => p.Customer)
                 .Include(p => p.RepairJobs)
                 .FirstOrDefault(p => p.Id == id);
@@ -48,7 +49,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("create")]
         public IActionResult Create()
         {
-            PopulateCustomers();
+            PopulateCustomerSelection(null);
             return View();
         }
 
@@ -58,7 +59,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         {
             if (!ModelState.IsValid)
             {
-                PopulateCustomers(phone.CustomerId);
+                PopulateCustomerSelection(phone.CustomerId);
                 return View(phone);
             }
 
@@ -72,14 +73,14 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("edit/{id:int}")]
         public IActionResult Edit(int id)
         {
-            var phone = _dbContext.Phones.Find(id);
+            var phone = _dbContext.Phones.FirstOrDefault(p => p.Id == id && !p.IsDeleted);
 
             if (phone is null)
             {
                 return NotFound();
             }
 
-            PopulateCustomers(phone.CustomerId);
+            PopulateCustomerSelection(phone.CustomerId);
             return View(phone);
         }
 
@@ -92,27 +93,104 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
+            var existingPhone = _dbContext.Phones.FirstOrDefault(p => p.Id == id && !p.IsDeleted);
+            if (existingPhone is null)
+            {
+                return NotFound();
+            }
+
             if (!ModelState.IsValid)
             {
-                PopulateCustomers(phone.CustomerId);
+                PopulateCustomerSelection(phone.CustomerId);
                 return View(phone);
             }
 
-            _dbContext.Phones.Update(phone);
+            existingPhone.Brand = phone.Brand;
+            existingPhone.Model = phone.Model;
+            existingPhone.IMEI = phone.IMEI;
+            existingPhone.YearOfManufacture = phone.YearOfManufacture;
+            existingPhone.OperatingSystem = phone.OperatingSystem;
+            existingPhone.CustomerId = phone.CustomerId;
             _dbContext.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
 
-        private void PopulateCustomers(int? selectedCustomerId = null)
+        private void PopulateCustomerSelection(int? selectedCustomerId)
         {
-            var customers = _dbContext.Customers
-                .OrderBy(c => c.LastName)
-                .ThenBy(c => c.FirstName)
-                .Select(c => new { c.Id, FullName = c.FirstName + " " + c.LastName })
-                .ToList();
+            ViewBag.SelectedCustomerText = string.Empty;
+            if (!selectedCustomerId.HasValue || selectedCustomerId.Value <= 0)
+            {
+                return;
+            }
 
-            ViewBag.CustomerId = new SelectList(customers, "Id", "FullName", selectedCustomerId);
+            var label = _dbContext.Customers
+                .Where(c => !c.IsDeleted && c.Id == selectedCustomerId.Value)
+                .Select(c => c.FirstName + " " + c.LastName)
+                .FirstOrDefault();
+
+            ViewBag.SelectedCustomerText = label ?? string.Empty;
+        }
+
+        [HttpGet]
+        [Route("delete/{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var phone = _dbContext.Phones
+                .Where(p => !p.IsDeleted)
+                .Include(p => p.Customer)
+                .Include(p => p.RepairJobs)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (phone is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.HasDependencies = phone.RepairJobs.Any();
+            return View(phone);
+        }
+
+        [HttpPost]
+        [Route("delete/{id:int}")]
+        [ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id, string deleteMode)
+        {
+            var phone = _dbContext.Phones
+                .Include(p => p.RepairJobs)
+                .FirstOrDefault(p => p.Id == id && !p.IsDeleted);
+
+            if (phone is null)
+            {
+                return NotFound();
+            }
+
+            var hasDependencies = phone.RepairJobs.Any();
+            if (hasDependencies
+                && !string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(deleteMode, "hard", System.StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Choose a delete option for records with related data.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase))
+            {
+                phone.IsDeleted = true;
+                phone.DeletedAt = System.DateTime.UtcNow;
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (phone.RepairJobs.Any())
+            {
+                _dbContext.RepairJobs.RemoveRange(phone.RepairJobs);
+            }
+
+            _dbContext.Phones.Remove(phone);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

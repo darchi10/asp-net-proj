@@ -20,6 +20,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Index()
         {
             var spareParts = _dbContext.SpareParts
+                .Where(sp => !sp.IsDeleted)
                 .Include(sp => sp.RepairJobs)
                 .ToList();
 
@@ -30,6 +31,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Details(int id)
         {
             var sparePart = _dbContext.SpareParts
+                .Where(sp => !sp.IsDeleted)
                 .Include(sp => sp.RepairJobs)
                 .FirstOrDefault(sp => sp.Id == id);
 
@@ -67,7 +69,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("edit/{id:int}")]
         public IActionResult Edit(int id)
         {
-            var sparePart = _dbContext.SpareParts.Find(id);
+            var sparePart = _dbContext.SpareParts.FirstOrDefault(sp => sp.Id == id && !sp.IsDeleted);
 
             if (sparePart is null)
             {
@@ -86,12 +88,81 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
+            var existingPart = _dbContext.SpareParts.FirstOrDefault(sp => sp.Id == id && !sp.IsDeleted);
+            if (existingPart is null)
+            {
+                return NotFound();
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(sparePart);
             }
 
-            _dbContext.SpareParts.Update(sparePart);
+            existingPart.Name = sparePart.Name;
+            existingPart.Manufacturer = sparePart.Manufacturer;
+            existingPart.Price = sparePart.Price;
+            existingPart.StockQuantity = sparePart.StockQuantity;
+            _dbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Route("delete/{id:int}")]
+        public IActionResult Delete(int id)
+        {
+            var sparePart = _dbContext.SpareParts
+                .Where(sp => !sp.IsDeleted)
+                .Include(sp => sp.RepairJobs)
+                .FirstOrDefault(sp => sp.Id == id);
+
+            if (sparePart is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.HasDependencies = sparePart.RepairJobs.Any();
+            return View(sparePart);
+        }
+
+        [HttpPost]
+        [Route("delete/{id:int}")]
+        [ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id, string deleteMode)
+        {
+            var sparePart = _dbContext.SpareParts
+                .Include(sp => sp.RepairJobs)
+                .FirstOrDefault(sp => sp.Id == id && !sp.IsDeleted);
+
+            if (sparePart is null)
+            {
+                return NotFound();
+            }
+
+            var hasDependencies = sparePart.RepairJobs.Any();
+            if (hasDependencies
+                && !string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(deleteMode, "hard", System.StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Choose a delete option for records with related data.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase))
+            {
+                sparePart.IsDeleted = true;
+                sparePart.DeletedAt = System.DateTime.UtcNow;
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (sparePart.RepairJobs.Any())
+            {
+                _dbContext.RepairJobs.RemoveRange(sparePart.RepairJobs);
+            }
+
+            _dbContext.SpareParts.Remove(sparePart);
             _dbContext.SaveChanges();
 
             return RedirectToAction(nameof(Index));

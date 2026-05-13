@@ -1,0 +1,64 @@
+@model MobilePhoneServiceAndSalesSystem.Models.RepairJob
+
+@{
+    ViewData["Title"] = "Delete Repair Job";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card shadow-sm border-0 bg-dark text-light rounded-4">
+        <div class="card-body p-4 p-lg-5">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 me-3">
+                    <i class="bi bi-exclamation-triangle fs-4"></i>
+                </div>
+                <div>
+                    <h2 class="h4 mb-1">Delete Repair Job #@Model.Id</h2>
+                    <p class="text-secondary mb-0">@Model.ReceivedDate.ToString("MMM dd, yyyy")</p>
+                </div>
+            </div>
+
+            @if ((bool)(ViewBag.HasDependencies ?? false))
+            {
+                <p class="text-secondary">
+                    This repair job is used in related data. Choose a soft delete to hide the job or a hard delete to remove
+                    the job and all related parts usage.
+                </p>
+            }
+            else
+            {
+                <p class="text-secondary">No related data was found. This action permanently removes the repair job record.</p>
+            }
+
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <div class="border border-secondary rounded-4 p-3 bg-black bg-opacity-25">
+                        <small class="text-secondary d-block">Used Parts</small>
+                        <span class="fw-bold">@Model.UsedParts.Count</span>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                <input asp-for="Id" type="hidden" />
+                @if ((bool)(ViewBag.HasDependencies ?? false))
+                {
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 me-2" name="deleteMode" value="soft">
+                        <i class="bi bi-archive me-2"></i>Soft Delete
+                    </button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 me-2" name="deleteMode" value="hard">
+                        <i class="bi bi-trash3 me-2"></i>Hard Delete
+                    </button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 me-2" name="deleteMode" value="hard">
+                        <i class="bi bi-trash3 me-2"></i>Delete
+                    </button>
+                }
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary rounded-pill px-4">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure default culture to use Euro for currency
 var defaultCulture = new CultureInfo("en-IE");
 var localizationOptions = new RequestLocalizationOptions
 {

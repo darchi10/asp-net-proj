@@ -11,9 +11,14 @@ namespace MobilePhoneServiceAndSalesSystem.Models
         public int Id { get; set; }
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
+        [Required]
+        [StringLength(250)]
         public string ShippingAddress { get; set; } = string.Empty;
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         [ForeignKey("Customer")]
+        [Range(1, int.MaxValue)]
         public int CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
 

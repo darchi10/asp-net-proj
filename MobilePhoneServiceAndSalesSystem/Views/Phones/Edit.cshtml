@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Edit Phone";
+    var selectedCustomerText = ViewBag.SelectedCustomerText as string ?? string.Empty;
+    var selectedCustomerId = Model?.CustomerId > 0 ? Model.CustomerId : (int?)null;
 }
 
 <div class="container mt-4 mb-5 mx-auto" style="max-width: 900px;">
@@ -64,13 +66,16 @@
                 <h5 class="text-primary mb-3 fs-6 text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-person-badge me-2"></i>Ownership</h5>
                 <div class="row g-3">
                     <div class="col-12">
-                        <div class="form-floating">
-                            <select asp-for="CustomerId" asp-items="ViewBag.CustomerId" class="form-select bg-black text-light border-secondary focus-ring-primary">
-                                <option value="">-- Select Customer --</option>
-                            </select>
-                            <label asp-for="CustomerId" class="text-secondary"></label>
-                        </div>
-                        <span asp-validation-for="CustomerId" class="text-danger small mt-1 d-block ms-1"></span>
+                        @await Html.PartialAsync("_AutocompleteDropdown", new MobilePhoneServiceAndSalesSystem.Models.AutocompleteSelectViewModel
+                        {
+                            InputName = "CustomerId",
+                            SelectedId = selectedCustomerId,
+                            SelectedText = selectedCustomerText,
+                            Label = "Customer",
+                            Placeholder = "Start typing a customer name",
+                            EndpointUrl = Url.Content("~/customers/search"),
+                            RequiredMessage = "Select a customer."
+                        })
                     </div>
                 </div>
 

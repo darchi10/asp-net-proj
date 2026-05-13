@@ -23,7 +23,6 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\scopedcss\bundle\MobilePhoneServiceAndSalesSystem.styles.css
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\scopedcss\projectbundle\MobilePhoneServiceAndSalesSystem.bundle.scp.css
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\u1m5qnojby-{0}-61n19gt1b8-61n19gt1b8.gz
-C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\zp5t41jqrj-{0}-bqjiyaj88i-bqjiyaj88i.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\kcvwv58v2s-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\x2j6jeh8wa-{0}-erw9l3u2r3-erw9l3u2r3.gz
@@ -93,7 +92,6 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.pdb
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.genruntimeconfig.cache
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\ref\MobilePhoneServiceAndSalesSystem.dll
-C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\or4pea7v0x-{0}-j4xc0c91un-j4xc0c91un.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\t79nd0he1y-{0}-ranhrenhff-ranhrenhff.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ae712izet5-{0}-ranhrenhff-ranhrenhff.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.dll
@@ -186,3 +184,5 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-obmx4ii7mg-obmx4ii7mg.gz
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\or4pea7v0x-{0}-r8bxbu4ht2-r8bxbu4ht2.gz

@@ -34,6 +34,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Customers/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Customers/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -46,6 +50,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Customers/_CustomerCards.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3VzdG9tZXJzXF9DdXN0b21lckNhcmRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,6 +64,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Orders/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Orders/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Orders/Details.cshtml]
@@ -74,6 +86,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhvbmVzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Phones/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhvbmVzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Phones/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGhvbmVzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -90,6 +106,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdHNcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Products/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdHNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Products/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHVjdHNcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -104,6 +124,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/RepairJobs/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwYWlySm9ic1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/RepairJobs/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwYWlySm9ic1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/RepairJobs/Details.cshtml]
@@ -126,12 +150,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Shared/_AutocompleteDropdown.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BdXRvY29tcGxldGVEcm9wZG93bi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/SpareParts/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BhcmVQYXJ0c1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/SpareParts/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3BhcmVQYXJ0c1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/SpareParts/Details.cshtml]
@@ -148,6 +180,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Technicians/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVjaG5pY2lhbnNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Technicians/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVjaG5pY2lhbnNcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Dario/Desktop/faks/6.semestar/ASP.NET/projekt/MobilePhoneServiceAndSalesSystem/Views/Technicians/Details.cshtml]

@@ -22,6 +22,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Index()
         {
             var orders = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
                 .ToList();
@@ -33,6 +34,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Details(int id)
         {
             var order = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
@@ -50,7 +52,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("create")]
         public IActionResult Create()
         {
-            PopulateCustomers();
+            PopulateCustomerSelection(null);
             PopulateProducts();
             return View();
         }
@@ -68,7 +70,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             if (!ModelState.IsValid)
             {
-                PopulateCustomers(order.CustomerId);
+                PopulateCustomerSelection(order.CustomerId);
                 PopulateProducts();
                 order.OrderItems = orderItems;
                 return View(order);
@@ -76,7 +78,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             if (!TryApplyProductPricing(orderItems, out var totalAmount))
             {
-                PopulateCustomers(order.CustomerId);
+                PopulateCustomerSelection(order.CustomerId);
                 PopulateProducts();
                 order.OrderItems = orderItems;
                 return View(order);
@@ -97,6 +99,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Edit(int id)
         {
             var order = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
                 .Include(o => o.OrderItems)
                 .FirstOrDefault(o => o.Id == id);
 
@@ -105,7 +108,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
-            PopulateCustomers(order.CustomerId);
+            PopulateCustomerSelection(order.CustomerId);
             PopulateProducts();
             return View(order);
         }
@@ -120,6 +123,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             }
 
             var existingOrder = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
                 .Include(o => o.OrderItems)
                 .FirstOrDefault(o => o.Id == id);
 
@@ -137,7 +141,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             if (!ModelState.IsValid)
             {
-                PopulateCustomers(order.CustomerId);
+                PopulateCustomerSelection(order.CustomerId);
                 PopulateProducts();
                 order.OrderItems = orderItems;
                 order.OrderDate = existingOrder.OrderDate;
@@ -146,7 +150,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             if (!TryApplyProductPricing(orderItems, out var totalAmount))
             {
-                PopulateCustomers(order.CustomerId);
+                PopulateCustomerSelection(order.CustomerId);
                 PopulateProducts();
                 order.OrderItems = orderItems;
                 order.OrderDate = existingOrder.OrderDate;
@@ -165,20 +169,86 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private void PopulateCustomers(int? selectedCustomerId = null)
+        [HttpGet]
+        [Route("delete/{id:int}")]
+        public IActionResult Delete(int id)
         {
-            var customers = _dbContext.Customers
-                .OrderBy(c => c.LastName)
-                .ThenBy(c => c.FirstName)
-                .Select(c => new { c.Id, FullName = c.FirstName + " " + c.LastName })
-                .ToList();
+            var order = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
+                .Include(o => o.OrderItems)
+                .FirstOrDefault(o => o.Id == id);
 
-            ViewBag.CustomerId = new SelectList(customers, "Id", "FullName", selectedCustomerId);
+            if (order is null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.HasDependencies = order.OrderItems.Any();
+            return View(order);
+        }
+
+        [HttpPost]
+        [Route("delete/{id:int}")]
+        [ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id, string deleteMode)
+        {
+            var order = _dbContext.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefault(o => o.Id == id && !o.IsDeleted);
+
+            if (order is null)
+            {
+                return NotFound();
+            }
+
+            var hasDependencies = order.OrderItems.Any();
+            if (hasDependencies
+                && !string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(deleteMode, "hard", System.StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Choose a delete option for records with related data.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase))
+            {
+                order.IsDeleted = true;
+                order.DeletedAt = System.DateTime.UtcNow;
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            if (order.OrderItems.Any())
+            {
+                _dbContext.OrderItems.RemoveRange(order.OrderItems);
+            }
+
+            _dbContext.Orders.Remove(order);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private void PopulateCustomerSelection(int? selectedCustomerId)
+        {
+            ViewBag.SelectedCustomerText = string.Empty;
+            if (!selectedCustomerId.HasValue || selectedCustomerId.Value <= 0)
+            {
+                return;
+            }
+
+            var label = _dbContext.Customers
+                .Where(c => !c.IsDeleted && c.Id == selectedCustomerId.Value)
+                .Select(c => c.FirstName + " " + c.LastName)
+                .FirstOrDefault();
+
+            ViewBag.SelectedCustomerText = label ?? string.Empty;
         }
 
         private void PopulateProducts()
         {
             var products = _dbContext.Products
+                .Where(p => !p.IsDeleted)
                 .OrderBy(p => p.Name)
                 .Select(p => new { p.Id, p.Name })
                 .ToList();
@@ -203,19 +273,28 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             totalAmount = 0m;
             var productIds = items.Select(i => i.ProductId).Distinct().ToList();
             var products = _dbContext.Products
-                .Where(p => productIds.Contains(p.Id))
-                .ToDictionary(p => p.Id, p => p.CurrentPrice);
+                .Where(p => productIds.Contains(p.Id) && !p.IsDeleted)
+                .Select(p => new { p.Id, p.CurrentPrice, p.StockQuantity, p.Name })
+                .ToDictionary(p => p.Id, p => p);
 
             foreach (var item in items)
             {
-                if (!products.TryGetValue(item.ProductId, out var unitPrice))
+                if (!products.TryGetValue(item.ProductId, out var product))
                 {
                     ModelState.AddModelError("OrderItems", "One or more selected products are invalid.");
                     return false;
                 }
 
-                item.UnitPrice = unitPrice;
-                totalAmount += unitPrice * item.Quantity;
+                if (item.Quantity > product.StockQuantity)
+                {
+                    ModelState.AddModelError(
+                        "OrderItems",
+                        $"'{product.Name}' has only {product.StockQuantity} in stock.");
+                    return false;
+                }
+
+                item.UnitPrice = product.CurrentPrice;
+                totalAmount += product.CurrentPrice * item.Quantity;
             }
 
             return true;

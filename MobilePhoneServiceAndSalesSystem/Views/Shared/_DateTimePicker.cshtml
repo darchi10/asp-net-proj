@@ -1,0 +1,29 @@
+@model MobilePhoneServiceAndSalesSystem.Models.DateTimePickerViewModel
+@using System.Globalization
+
+@{
+    var culture = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+    var valueString = Model.Value?.ToString("yyyy-MM-ddTHH:mm:ss") ?? string.Empty;
+    var displayFormat = Model.IncludeTime ? (culture == "hr" ? "d.m.Y. H:i" : "m/d/Y H:i") : (culture == "hr" ? "d.m.Y." : "m/d/Y");
+}
+
+<div class="datetime-picker-wrapper" 
+     data-culture="@culture" 
+     data-include-time="@Model.IncludeTime.ToString().ToLower()"
+     data-format="@displayFormat">
+    <div class="form-floating">
+        <input type="text" 
+               id="@(Model.PropertyName)_picker"
+               class="form-control bg-black text-light border-secondary focus-ring-primary datetime-picker-input" 
+               placeholder=" "
+               value="@(Model.Value.HasValue ? Model.Value.Value.ToString(culture == "hr" ? "dd.MM.yyyy. HH:mm" : "MM/dd/yyyy HH:mm") : "")"
+               autocomplete="off" />
+        <label for="@(Model.PropertyName)_picker" class="text-secondary">@Model.Label</label>
+    </div>
+    <input type="hidden" 
+           name="@Model.PropertyName" 
+           id="@Model.PropertyName" 
+           value="@valueString" 
+           class="datetime-picker-value" />
+    <span asp-validation-for="@Model.PropertyName" class="text-danger small mt-1 d-block ms-1"></span>
+</div>

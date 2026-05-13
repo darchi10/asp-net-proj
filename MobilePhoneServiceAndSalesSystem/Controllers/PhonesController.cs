@@ -53,7 +53,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             var phones = _dbContext.Phones
                 .Where(p => !p.IsDeleted
-                    && (p.Brand + " " + p.Model + " " + p.Customer.FirstName + " " + p.Customer.LastName).Contains(query))
+                    && (p.Brand.Contains(query) || p.Model.Contains(query) || (p.Customer != null && (p.Customer.FirstName + " " + p.Customer.LastName).Contains(query))))
                 .Include(p => p.Customer)
                 .Include(p => p.RepairJobs)
                 .ToList();

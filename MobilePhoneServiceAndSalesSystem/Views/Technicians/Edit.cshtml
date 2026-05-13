@@ -50,11 +50,13 @@
                 <h5 class="text-primary mb-3 fs-6 text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-clipboard-check me-2"></i>Employment</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="form-floating">
-                            <input asp-for="HireDate" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " type="date" />
-                            <label asp-for="HireDate" class="text-secondary"></label>
-                        </div>
-                        <span asp-validation-for="HireDate" class="text-danger small mt-1 d-block ms-1"></span>
+                        @await Html.PartialAsync("_DateTimePicker", new MobilePhoneServiceAndSalesSystem.Models.DateTimePickerViewModel
+                        {
+                            PropertyName = "HireDate",
+                            Label = "Hire Date",
+                            Value = Model?.HireDate,
+                            IncludeTime = false
+                        })
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">

@@ -56,7 +56,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             var orders = _dbContext.Orders
                 .Where(o => !o.IsDeleted
-                    && (o.ShippingAddress + " " + o.Customer.FirstName + " " + o.Customer.LastName).Contains(query))
+                    && (o.ShippingAddress.Contains(query) || (o.Customer != null && (o.Customer.FirstName + " " + o.Customer.LastName).Contains(query))))
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
                 .ToList();

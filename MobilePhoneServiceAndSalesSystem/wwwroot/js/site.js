@@ -101,6 +101,7 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						customerResults.innerHTML = html;
+						animateListItems(customerResults);
 					});
 			}, 250);
 		});
@@ -118,6 +119,7 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						technicianResults.innerHTML = html;
+						animateListItems(technicianResults);
 					});
 			}, 250);
 		});
@@ -135,6 +137,7 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						productResults.innerHTML = html;
+						animateListItems(productResults);
 					});
 			}, 250);
 		});
@@ -152,6 +155,7 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						sparePartResults.innerHTML = html;
+						animateListItems(sparePartResults);
 					});
 			}, 250);
 		});
@@ -169,6 +173,7 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						phoneResults.innerHTML = html;
+						animateListItems(phoneResults);
 					});
 			}, 250);
 		});
@@ -186,6 +191,7 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						orderResults.innerHTML = html;
+						animateListItems(orderResults);
 					});
 			}, 250);
 		});
@@ -203,8 +209,78 @@
 					.then(response => response.ok ? response.text() : "")
 					.then(html => {
 						repairJobResults.innerHTML = html;
+						animateListItems(repairJobResults);
 					});
 			}, 250);
 		});
 	}
+
+	// Advanced JavaScript Animations using Web Animations API
+	function animateListItems(container) {
+		if (!container) return;
+		const items = container.querySelectorAll(".col");
+		items.forEach((item, index) => {
+			item.animate(
+				[
+					{ opacity: 0, transform: "translateY(20px)" },
+					{ opacity: 1, transform: "translateY(0)" }
+				],
+				{
+					duration: 400,
+					delay: index * 50,
+					easing: "ease-out",
+					fill: "forwards"
+				}
+			);
+		});
+	}
+
+	// Initial animations for cards on load
+	document.querySelectorAll(".retail-card, .card").forEach((card, index) => {
+		card.animate(
+			[
+				{ opacity: 0, transform: "scale(0.95) translateY(10px)" },
+				{ opacity: 1, transform: "scale(1) translateY(0)" }
+			],
+			{
+				duration: 500,
+				delay: index * 100,
+				easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+				fill: "forwards"
+			}
+		);
+	});
+
+	// DatePicker Initialization
+	function initDatePickers() {
+		document.querySelectorAll(".datetime-picker-wrapper").forEach(wrapper => {
+			const input = wrapper.querySelector(".datetime-picker-input");
+			const hidden = wrapper.querySelector(".datetime-picker-value");
+			const culture = wrapper.dataset.culture;
+			const includeTime = wrapper.dataset.includeTime === "true";
+			const format = wrapper.dataset.format;
+
+			flatpickr(input, {
+				locale: culture,
+				enableTime: includeTime,
+				dateFormat: format,
+				time_24hr: true,
+				onChange: function (selectedDates, dateStr, instance) {
+					if (selectedDates.length > 0) {
+						// Set ISO string to hidden input for server-side binding
+						const date = selectedDates[0];
+						// Correct for timezone offset to send UTC or local as expected
+						const offset = date.getTimezoneOffset() * 60000;
+						const localISOTime = (new Date(date - offset)).toISOString().slice(0, -1);
+						hidden.value = localISOTime;
+					} else {
+						hidden.value = "";
+					}
+					hidden.dispatchEvent(new Event("change", { bubbles: true }));
+				}
+			});
+		});
+	}
+
+	initDatePickers();
 })();

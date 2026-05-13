@@ -79,7 +79,8 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             var repairJobs = _dbContext.RepairJobs
                 .Where(rj => !rj.IsDeleted
-                    && (rj.Description + " " + rj.Technician.FirstName + " " + rj.Technician.LastName).Contains(query))
+                    && (rj.Description.Contains(query) 
+                        || (rj.Technician != null && (rj.Technician.FirstName + " " + rj.Technician.LastName).Contains(query))))
                 .Include(rj => rj.Technician)
                 .Include(rj => rj.UsedParts)
                 .ToList();

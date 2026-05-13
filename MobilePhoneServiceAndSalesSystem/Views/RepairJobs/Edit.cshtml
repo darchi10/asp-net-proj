@@ -61,18 +61,22 @@
                         <span asp-validation-for="Status" class="text-danger small mt-1 d-block ms-1"></span>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="ReceivedDate" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " type="date" />
-                            <label asp-for="ReceivedDate" class="text-secondary"></label>
-                        </div>
-                        <span asp-validation-for="ReceivedDate" class="text-danger small mt-1 d-block ms-1"></span>
+                        @await Html.PartialAsync("_DateTimePicker", new MobilePhoneServiceAndSalesSystem.Models.DateTimePickerViewModel
+                        {
+                            PropertyName = "ReceivedDate",
+                            Label = "Received Date",
+                            Value = Model?.ReceivedDate,
+                            IncludeTime = true
+                        })
                     </div>
                     <div class="col-md-4">
-                        <div class="form-floating">
-                            <input asp-for="CompletedDate" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " type="date" />
-                            <label asp-for="CompletedDate" class="text-secondary"></label>
-                        </div>
-                        <span asp-validation-for="CompletedDate" class="text-danger small mt-1 d-block ms-1"></span>
+                        @await Html.PartialAsync("_DateTimePicker", new MobilePhoneServiceAndSalesSystem.Models.DateTimePickerViewModel
+                        {
+                            PropertyName = "CompletedDate",
+                            Label = "Completed Date",
+                            Value = Model?.CompletedDate,
+                            IncludeTime = true
+                        })
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">

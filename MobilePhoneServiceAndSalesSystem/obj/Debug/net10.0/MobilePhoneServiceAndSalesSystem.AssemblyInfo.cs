@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MobilePhoneServiceAndSalesSystem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+704ef64487f1c422192f9b6b1f0620f945cbee70")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aa9fecdb481fa407b39bf4947f3ab0b54fbd8275")]
 [assembly: System.Reflection.AssemblyProductAttribute("MobilePhoneServiceAndSalesSystem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MobilePhoneServiceAndSalesSystem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

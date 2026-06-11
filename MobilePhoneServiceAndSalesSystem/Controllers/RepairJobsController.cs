@@ -32,7 +32,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 .ThenInclude(p => p.Customer)
                 .AsQueryable();
 
-            if (User.IsInRole("Worker"))
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything, no filtering needed
+            }
+            else if (User.IsInRole("Worker"))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrWhiteSpace(userId))
@@ -74,7 +78,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                     .FirstOrDefault(rj => rj.Id == searchId.Value);
                 if (repairJob != null)
                 {
-                    if (User.IsInRole("Worker"))
+                    if (User.IsInRole("Admin"))
+                    {
+                        // Admin sees everything
+                    }
+                    else if (User.IsInRole("Worker"))
                     {
                         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                         if (string.IsNullOrWhiteSpace(userId) || repairJob.Technician?.UserId != userId)
@@ -121,7 +129,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
-            if (User.IsInRole("Worker"))
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything
+            }
+            else if (User.IsInRole("Worker"))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrWhiteSpace(userId) || repairJob.Technician?.UserId != userId)
@@ -157,7 +169,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 .Include(rj => rj.UsedParts)
                 .AsQueryable();
 
-            if (User.IsInRole("Worker"))
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything
+            }
+            else if (User.IsInRole("Worker"))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrWhiteSpace(userId))
@@ -186,7 +202,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Create()
         {
             PopulateLookups();
@@ -195,7 +211,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Create(RepairJob repairJob, int[] usedPartIds)
         {
             if (!ModelState.IsValid)

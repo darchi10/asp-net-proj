@@ -62,7 +62,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Create()
         {
             return View();
@@ -70,7 +70,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Create(Product product)
         {
             if (!ModelState.IsValid)
@@ -86,7 +86,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("edit/{id:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Edit(int id)
         {
             var product = _dbContext.Products.FirstOrDefault(p => p.Id == id && !p.IsDeleted);
@@ -101,7 +101,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("edit/{id:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Edit(int id, Product product)
         {
             if (id != product.Id)

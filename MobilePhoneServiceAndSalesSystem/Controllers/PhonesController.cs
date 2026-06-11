@@ -8,7 +8,7 @@ using System.Linq;
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("phones")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Worker")]
     public class PhonesController : Controller
     {
         private readonly AppDbContext _dbContext;

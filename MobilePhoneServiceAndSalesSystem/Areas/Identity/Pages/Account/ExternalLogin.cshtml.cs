@@ -61,18 +61,6 @@ namespace MobilePhoneServiceAndSalesSystem.Areas.Identity.Pages.Account
             [Required]
             [StringLength(250)]
             public string Address { get; set; } = string.Empty;
-
-            [Required]
-            [StringLength(11, MinimumLength = 11)]
-            [RegularExpression("^[0-9]*$", ErrorMessage = "OIB smije sadržavati samo brojeve.")]
-            [Display(Name = "OIB")]
-            public string OIB { get; set; } = string.Empty;
-
-            [Required]
-            [StringLength(13, MinimumLength = 13)]
-            [RegularExpression("^[0-9]*$", ErrorMessage = "JMBG smije sadržavati samo brojeve.")]
-            [Display(Name = "JMBG")]
-            public string JMBG { get; set; } = string.Empty;
         }
 
         public IActionResult OnPost(string provider, string? returnUrl = null)
@@ -158,12 +146,19 @@ namespace MobilePhoneServiceAndSalesSystem.Areas.Identity.Pages.Account
                 return Page();
             }
 
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError(string.Empty, "Email not found from provider.");
+                return Page();
+            }
+
             var user = new AppUser
             {
-                UserName = Input.Email,
-                Email = Input.Email,
-                OIB = Input.OIB,
-                JMBG = Input.JMBG
+                UserName = email,
+                Email = email,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName
             };
 
             var result = await _userManager.CreateAsync(user);

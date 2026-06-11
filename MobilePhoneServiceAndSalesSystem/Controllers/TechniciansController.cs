@@ -67,6 +67,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View(new TechnicianCreateViewModel { HireDate = System.DateTime.Now });
@@ -74,6 +75,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(TechnicianCreateViewModel model)
         {
             if (!ModelState.IsValid)
@@ -85,8 +87,8 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                OIB = model.OIB,
-                JMBG = model.JMBG
+                FirstName = model.FirstName,
+                LastName = model.LastName
             };
 
             var createUserResult = await _userManager.CreateAsync(user, model.Password);
@@ -137,6 +139,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var technician = _dbContext.Technicians.FirstOrDefault(t => t.Id == id && !t.IsDeleted);
@@ -151,6 +154,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, Technician technician)
         {
             if (id != technician.Id)

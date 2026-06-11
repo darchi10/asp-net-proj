@@ -16,7 +16,7 @@
             <div class="auth-hero-meta">
                 <div>
                     <span class="auth-meta-label">Identity</span>
-                    <span class="auth-meta-value">Verified OIB/JMBG</span>
+                    <span class="auth-meta-value">Verified Profile</span>
                 </div>
                 <div>
                     <span class="auth-meta-label">Access</span>
@@ -27,7 +27,7 @@
 
         <div class="auth-panel">
             <h2 class="auth-title">Create your account</h2>
-            <p class="auth-subtitle">Use your official details so we can keep service records consistent.</p>
+            <p class="auth-subtitle">Use your real details so we can keep service records consistent.</p>
 
             <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
                 <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
@@ -61,20 +61,6 @@
                         <label asp-for="Input.Address" class="auth-label"></label>
                         <input asp-for="Input.Address" class="form-control auth-input" autocomplete="street-address" />
                         <span asp-validation-for="Input.Address" class="text-danger"></span>
-                    </div>
-
-                    <div class="auth-field">
-                        <label asp-for="Input.OIB" class="auth-label"></label>
-                        <input asp-for="Input.OIB" class="form-control auth-input" />
-                        <span asp-validation-for="Input.OIB" class="text-danger"></span>
-                        <div class="auth-hint">OIB must be exactly 11 digits.</div>
-                    </div>
-
-                    <div class="auth-field">
-                        <label asp-for="Input.JMBG" class="auth-label"></label>
-                        <input asp-for="Input.JMBG" class="form-control auth-input" />
-                        <span asp-validation-for="Input.JMBG" class="text-danger"></span>
-                        <div class="auth-hint">JMBG must be exactly 13 digits.</div>
                     </div>
 
                     <div class="auth-field">

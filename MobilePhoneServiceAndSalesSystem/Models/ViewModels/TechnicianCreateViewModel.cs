@@ -28,18 +28,6 @@ namespace MobilePhoneServiceAndSalesSystem.Models.ViewModels
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(11, MinimumLength = 11)]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "OIB smije sadrzavati samo brojeve.")]
-        [Display(Name = "OIB")]
-        public string OIB { get; set; } = string.Empty;
-
-        [Required]
-        [StringLength(13, MinimumLength = 13)]
-        [RegularExpression("^[0-9]*$", ErrorMessage = "JMBG smije sadrzavati samo brojeve.")]
-        [Display(Name = "JMBG")]
-        public string JMBG { get; set; } = string.Empty;
-
-        [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]

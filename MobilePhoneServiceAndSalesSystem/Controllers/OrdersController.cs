@@ -36,7 +36,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 .Include(o => o.OrderItems)
                 .AsQueryable();
 
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything
+            }
+            else if (User.IsInRole("Customer"))
             {
                 var customerId = EnsureCustomerLink();
                 if (!customerId.HasValue)
@@ -68,7 +72,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything
+            }
+            else if (User.IsInRole("Customer"))
             {
                 var customerId = EnsureCustomerLink();
                 if (!customerId.HasValue || order.CustomerId != customerId.Value)
@@ -95,7 +103,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
-            if (User.IsInRole("Customer"))
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything
+            }
+            else if (User.IsInRole("Customer"))
             {
                 var customerId = EnsureCustomerLink();
                 if (!customerId.HasValue || order.CustomerId != customerId.Value)

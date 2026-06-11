@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
@@ -12,10 +14,12 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
     public class CustomersController : Controller
     {
         private readonly AppDbContext _dbContext;
+        private readonly UserManager<AppUser> _userManager;
 
-        public CustomersController(AppDbContext dbContext)
+        public CustomersController(AppDbContext dbContext, UserManager<AppUser> userManager)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
         [Route("")]
@@ -157,7 +161,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteConfirmed(int id, string deleteMode)
+        public async Task<IActionResult> DeleteConfirmed(int id, string deleteMode)
         {
             var customer = _dbContext.Customers
                 .Include(c => c.Orders)
@@ -185,6 +189,22 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 customer.DeletedAt = System.DateTime.UtcNow;
                 _dbContext.SaveChanges();
                 return RedirectToAction(nameof(Index));
+            }
+
+            if (!string.IsNullOrWhiteSpace(customer.UserId))
+            {
+                var user = await _userManager.FindByIdAsync(customer.UserId);
+                if (user != null)
+                {
+                    customer.UserId = null;
+                    _dbContext.SaveChanges();
+                    var deleteUserResult = await _userManager.DeleteAsync(user);
+                    if (!deleteUserResult.Succeeded)
+                    {
+                        TempData["Error"] = "Failed to delete the linked account.";
+                        return RedirectToAction(nameof(Delete), new { id });
+                    }
+                }
             }
 
             var orderItems = customer.Orders.SelectMany(o => o.OrderItems).ToList();

@@ -10,11 +10,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MobilePhoneServiceAndSalesSystem.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="d-flex flex-column min-vh-100">
     @{
         var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
         var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+        var isSignedIn = User.Identity?.IsAuthenticated == true;
+        var isAdmin = User.IsInRole("Admin");
+        var isWorker = User.IsInRole("Worker");
+        var isCustomer = User.IsInRole("Customer");
     }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-4">
@@ -32,30 +37,46 @@
                             <a class="nav-link px-3 @(currentController == "Home" ? "active fw-semibold" : string.Empty)" href="~/">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "Customers" ? "active fw-semibold" : string.Empty)" href="~/customers">Customers</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "Phones" ? "active fw-semibold" : string.Empty)" href="~/phones">Phones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "RepairJobs" && currentAction != "Tracker" ? "active fw-semibold" : string.Empty)" href="~/repair-jobs">Repairs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 fw-medium @(currentController == "RepairJobs" && currentAction == "Tracker" ? "active fw-bold text-primary" : "text-warning")" href="~/repair-jobs/tracker">Track Repair</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "SpareParts" ? "active fw-semibold" : string.Empty)" href="~/spare-parts">Spare Parts</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link px-3 @(currentController == "Products" ? "active fw-semibold" : string.Empty)" href="~/products">Store</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "Orders" ? "active fw-semibold" : string.Empty)" href="~/orders">Orders</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "Technicians" ? "active fw-semibold" : string.Empty)" href="~/technicians">Technicians</a>
-                        </li>
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "Customers" ? "active fw-semibold" : string.Empty)" href="~/customers">Customers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "Phones" ? "active fw-semibold" : string.Empty)" href="~/phones">Phones</a>
+                            </li>
+                        }
+                        @if (isAdmin || isWorker || isCustomer)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "RepairJobs" && currentAction != "Tracker" ? "active fw-semibold" : string.Empty)" href="~/repair-jobs">Repairs</a>
+                            </li>
+                        }
+                        @if (isAdmin || isWorker)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "SpareParts" ? "active fw-semibold" : string.Empty)" href="~/spare-parts">Spare Parts</a>
+                            </li>
+                        }
+                        @if (isAdmin || isCustomer)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "Orders" ? "active fw-semibold" : string.Empty)" href="~/orders">Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 fw-medium @(currentController == "RepairJobs" && currentAction == "Tracker" ? "active fw-bold text-primary" : "text-warning")" href="~/repair-jobs/tracker">Track Repair</a>
+                            </li>
+                        }
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "Technicians" ? "active fw-semibold" : string.Empty)" href="~/technicians">Technicians</a>
+                            </li>
+                        }
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>

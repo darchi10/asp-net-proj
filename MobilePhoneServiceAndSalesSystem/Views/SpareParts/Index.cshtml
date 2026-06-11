@@ -19,7 +19,10 @@
         </div>
         <h3 class="fw-light">No spare parts</h3>
         <p class="mb-4">Inventory does not currently contain any active spare parts for repairs.</p>
-        <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Register a spare part</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Register a spare part</a>
+        }
     </div>
 }
 else
@@ -29,9 +32,12 @@ else
             <h2 class="h3 mb-0 text-white"><i class="bi bi-motherboard me-2 text-primary"></i>Spare Parts Inventory</h2>
             <p class="text-muted small mb-0 mt-1">Manage components available for device repairs</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-plus-lg me-2"></i>Add Spare Part
-        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>Add Spare Part
+            </a>
+        }
     </div>
 
     <div class="row g-3 mb-4">

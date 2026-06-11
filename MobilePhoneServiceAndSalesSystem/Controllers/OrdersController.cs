@@ -1,31 +1,53 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
 using System;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("orders")]
+    [Authorize(Roles = "Admin,Customer")]
     public class OrdersController : Controller
     {
         private readonly AppDbContext _dbContext;
+        private readonly IWebHostEnvironment _environment;
 
-        public OrdersController(AppDbContext dbContext)
+        public OrdersController(AppDbContext dbContext, IWebHostEnvironment environment)
         {
             _dbContext = dbContext;
+            _environment = environment;
         }
 
         [Route("")]
         public IActionResult Index()
         {
-            var orders = _dbContext.Orders
+            var ordersQuery = _dbContext.Orders
                 .Where(o => !o.IsDeleted)
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
-                .ToList();
+                .AsQueryable();
+
+            if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue)
+                {
+                    return Forbid();
+                }
+
+                ordersQuery = ordersQuery.Where(o => o.CustomerId == customerId.Value);
+            }
+
+            var orders = ordersQuery.ToList();
 
             return View(orders);
         }
@@ -38,6 +60,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                .Include(o => o.Attachments)
                 .FirstOrDefault(o => o.Id == id);
 
             if (order is null)
@@ -45,7 +68,151 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
+            if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue || order.CustomerId != customerId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
             return View(order);
+        }
+
+        [HttpGet]
+        [Route("{id:int}/files")]
+        public IActionResult GetFiles(int id)
+        {
+            var order = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
+                .Include(o => o.Customer)
+                .Include(o => o.Attachments)
+                .FirstOrDefault(o => o.Id == id);
+
+            if (order is null)
+            {
+                return NotFound();
+            }
+
+            if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue || order.CustomerId != customerId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
+            var files = order.Attachments
+                .OrderByDescending(a => a.UploadedAt)
+                .Select(a => new
+                {
+                    a.Id,
+                    a.OriginalFileName,
+                    a.FileSize,
+                    a.ContentType,
+                    a.UploadedAt,
+                    a.FilePath
+                })
+                .ToList();
+
+            return Json(files);
+        }
+
+        [HttpPost]
+        [Route("{id:int}/files")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UploadFile(int id, IFormFile file)
+        {
+            var order = _dbContext.Orders
+                .Where(o => !o.IsDeleted)
+                .FirstOrDefault(o => o.Id == id);
+
+            if (order is null)
+            {
+                return NotFound();
+            }
+
+            if (file is null || file.Length == 0)
+            {
+                return BadRequest(new { message = "No file selected." });
+            }
+
+            const long maxSize = 10 * 1024 * 1024;
+            if (file.Length > maxSize)
+            {
+                return BadRequest(new { message = "File size must be 10 MB or less." });
+            }
+
+            var extension = Path.GetExtension(file.FileName);
+            var allowedExtensions = new[] { ".pdf", ".png", ".jpg", ".jpeg" };
+            if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest(new { message = "Only PDF and image files are allowed." });
+            }
+
+            var uploadRoot = Path.Combine(_environment.WebRootPath, "uploads", "orders", id.ToString());
+            Directory.CreateDirectory(uploadRoot);
+
+            var storedFileName = $"{Guid.NewGuid():N}{extension}";
+            var filePath = Path.Combine(uploadRoot, storedFileName);
+
+            await using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var relativePath = $"/uploads/orders/{id}/{storedFileName}";
+            var attachment = new OrderAttachment
+            {
+                OrderId = id,
+                OriginalFileName = file.FileName,
+                StoredFileName = storedFileName,
+                ContentType = file.ContentType ?? string.Empty,
+                FileSize = file.Length,
+                FilePath = relativePath,
+                UploadedAt = DateTime.UtcNow
+            };
+
+            _dbContext.OrderAttachments.Add(attachment);
+            _dbContext.SaveChanges();
+
+            return Ok(new
+            {
+                attachment.Id,
+                attachment.OriginalFileName,
+                attachment.FileSize,
+                attachment.ContentType,
+                attachment.UploadedAt,
+                attachment.FilePath
+            });
+        }
+
+        [HttpDelete]
+        [Route("files/{fileId:int}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteFile(int fileId)
+        {
+            var attachment = _dbContext.OrderAttachments
+                .Include(a => a.Order)
+                .FirstOrDefault(a => a.Id == fileId);
+
+            if (attachment is null || attachment.Order?.IsDeleted == true)
+            {
+                return NotFound();
+            }
+
+            var absolutePath = Path.Combine(_environment.WebRootPath, attachment.FilePath.TrimStart('/'));
+            if (System.IO.File.Exists(absolutePath))
+            {
+                System.IO.File.Delete(absolutePath);
+            }
+
+            _dbContext.OrderAttachments.Remove(attachment);
+            _dbContext.SaveChanges();
+
+            return Ok();
         }
 
         [HttpGet]
@@ -54,18 +221,32 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         {
             var query = term?.Trim() ?? string.Empty;
 
-            var orders = _dbContext.Orders
+            var ordersQuery = _dbContext.Orders
                 .Where(o => !o.IsDeleted
                     && (o.ShippingAddress.Contains(query) || (o.Customer != null && (o.Customer.FirstName + " " + o.Customer.LastName).Contains(query))))
                 .Include(o => o.Customer)
                 .Include(o => o.OrderItems)
-                .ToList();
+                .AsQueryable();
+
+            if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue)
+                {
+                    return Forbid();
+                }
+
+                ordersQuery = ordersQuery.Where(o => o.CustomerId == customerId.Value);
+            }
+
+            var orders = ordersQuery.ToList();
 
             return PartialView("_OrderCards", orders);
         }
 
         [HttpGet]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             PopulateCustomerSelection(null);
@@ -75,6 +256,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Order order)
         {
             var orderItems = NormalizeOrderItems(order.OrderItems);
@@ -112,6 +294,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var order = _dbContext.Orders
@@ -131,6 +314,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, Order order)
         {
             if (id != order.Id)
@@ -187,6 +371,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var order = _dbContext.Orders
@@ -206,10 +391,12 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id, string deleteMode)
         {
             var order = _dbContext.Orders
                 .Include(o => o.OrderItems)
+                .Include(o => o.Attachments)
                 .FirstOrDefault(o => o.Id == id && !o.IsDeleted);
 
             if (order is null)
@@ -239,6 +426,20 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 _dbContext.OrderItems.RemoveRange(order.OrderItems);
             }
 
+            if (order.Attachments.Any())
+            {
+                foreach (var attachment in order.Attachments)
+                {
+                    var absolutePath = Path.Combine(_environment.WebRootPath, attachment.FilePath.TrimStart('/'));
+                    if (System.IO.File.Exists(absolutePath))
+                    {
+                        System.IO.File.Delete(absolutePath);
+                    }
+                }
+
+                _dbContext.OrderAttachments.RemoveRange(order.Attachments);
+            }
+
             _dbContext.Orders.Remove(order);
             _dbContext.SaveChanges();
 
@@ -259,6 +460,37 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 .FirstOrDefault();
 
             ViewBag.SelectedCustomerText = label ?? string.Empty;
+        }
+
+        private int? EnsureCustomerLink()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return null;
+            }
+
+            var customer = _dbContext.Customers.FirstOrDefault(c => !c.IsDeleted && c.UserId == userId);
+            if (customer != null)
+            {
+                return customer.Id;
+            }
+
+            var email = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            customer = _dbContext.Customers.FirstOrDefault(c => !c.IsDeleted && c.Email == email);
+            if (customer == null)
+            {
+                return null;
+            }
+
+            customer.UserId = userId;
+            _dbContext.SaveChanges();
+            return customer.Id;
         }
 
         private void PopulateProducts()

@@ -19,7 +19,10 @@
         </div>
         <h3 class="fw-light">No repair jobs</h3>
         <p class="mb-4">No devices are currently registered for service or repair.</p>
-        <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Start a new repair</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Start a new repair</a>
+        }
     </div>
 }
 else
@@ -29,9 +32,12 @@ else
             <h2 class="h3 mb-0 text-white"><i class="bi bi-tools me-2 text-primary"></i>Repair Jobs</h2>
             <p class="text-muted small mb-0 mt-1">Track device repair statuses and technician assignments</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-plus text-white me-1"></i>New Repair Job
-        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus text-white me-1"></i>New Repair Job
+            </a>
+        }
     </div>
 
     <div class="row g-3 mb-4">

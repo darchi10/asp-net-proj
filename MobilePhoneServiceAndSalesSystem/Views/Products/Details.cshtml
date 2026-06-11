@@ -48,12 +48,18 @@
                 </div>
 
                 <div class="d-flex flex-wrap gap-3 mt-2">
-                    <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-5 py-3 fw-bold flex-grow-1 text-center">
-                        <i class="bi bi-pencil-square me-2"></i>Edit Product
-                    </a>
-                    <a asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger rounded-pill px-5 py-3 fw-bold flex-grow-1 text-center">
-                        <i class="bi bi-trash3 me-2"></i>Delete Product
-                    </a>
+                        @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-5 py-3 fw-bold flex-grow-1 text-center">
+                            <i class="bi bi-pencil-square me-2"></i>Edit Product
+                        </a>
+                    }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Products" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger rounded-pill px-5 py-3 fw-bold flex-grow-1 text-center">
+                            <i class="bi bi-trash3 me-2"></i>Delete Product
+                        </a>
+                    }
                     <a asp-controller="Products" asp-action="Index" class="btn btn-outline-light rounded-pill px-5 py-3 fw-bold flex-grow-1 text-center">
                         <i class="bi bi-arrow-left me-2"></i>Back to Browse
                     </a>

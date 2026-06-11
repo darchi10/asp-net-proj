@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -5,10 +6,12 @@ using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("repair-jobs")]
+    [Authorize(Roles = "Admin,Worker,Customer")]
     public class RepairJobsController : Controller
     {
         private readonly AppDbContext _dbContext;
@@ -21,11 +24,37 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("")]
         public IActionResult Index()
         {
-            var repairJobs = _dbContext.RepairJobs
+            var repairJobsQuery = _dbContext.RepairJobs
                 .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.Technician)
                 .Include(rj => rj.UsedParts)
-                .ToList();
+                .Include(rj => rj.Phone)
+                .ThenInclude(p => p.Customer)
+                .AsQueryable();
+
+            if (User.IsInRole("Worker"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return Forbid();
+                }
+
+                repairJobsQuery = repairJobsQuery.Where(rj => rj.Technician != null && rj.Technician.UserId == userId);
+            }
+            else if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue)
+                {
+                    return Forbid();
+                }
+
+                repairJobsQuery = repairJobsQuery.Where(rj => rj.Phone != null
+                    && rj.Phone.CustomerId == customerId.Value);
+            }
+
+            var repairJobs = repairJobsQuery.ToList();
 
             return View(repairJobs);
         }
@@ -40,10 +69,32 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 var repairJob = _dbContext.RepairJobs
                     .Where(rj => !rj.IsDeleted)
                     .Include(rj => rj.Phone)
+                    .ThenInclude(p => p.Customer)
                     .Include(rj => rj.Technician)
                     .FirstOrDefault(rj => rj.Id == searchId.Value);
                 if (repairJob != null)
                 {
+                    if (User.IsInRole("Worker"))
+                    {
+                        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        if (string.IsNullOrWhiteSpace(userId) || repairJob.Technician?.UserId != userId)
+                        {
+                            ViewBag.ErrorTitle = "Access denied";
+                            ViewBag.ErrorMessage = "You do not have access to this repair job.";
+                            return View();
+                        }
+                    }
+                    else if (User.IsInRole("Customer"))
+                    {
+                        var customerId = EnsureCustomerLink();
+                        if (!customerId.HasValue || repairJob.Phone?.CustomerId != customerId.Value)
+                        {
+                            ViewBag.ErrorTitle = "Access denied";
+                            ViewBag.ErrorMessage = "You do not have access to this repair job.";
+                            return View();
+                        }
+                    }
+
                     ViewBag.RepairJob = repairJob;
                 }
                 else
@@ -59,6 +110,8 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         {
             var repairJob = _dbContext.RepairJobs
                 .Where(rj => !rj.IsDeleted)
+                .Include(rj => rj.Phone)
+                .ThenInclude(p => p.Customer)
                 .Include(rj => rj.Technician)
                 .Include(rj => rj.UsedParts)
                 .FirstOrDefault(rj => rj.Id == id);
@@ -66,6 +119,23 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             if (repairJob is null)
             {
                 return NotFound();
+            }
+
+            if (User.IsInRole("Worker"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userId) || repairJob.Technician?.UserId != userId)
+                {
+                    return Forbid();
+                }
+            }
+            else if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue || repairJob.Phone?.CustomerId != customerId.Value)
+                {
+                    return Forbid();
+                }
             }
 
             return View(repairJob);
@@ -77,19 +147,46 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         {
             var query = term?.Trim() ?? string.Empty;
 
-            var repairJobs = _dbContext.RepairJobs
+            var repairJobsQuery = _dbContext.RepairJobs
                 .Where(rj => !rj.IsDeleted
                     && (rj.Description.Contains(query) 
                         || (rj.Technician != null && (rj.Technician.FirstName + " " + rj.Technician.LastName).Contains(query))))
+                .Include(rj => rj.Phone)
+                .ThenInclude(p => p.Customer)
                 .Include(rj => rj.Technician)
                 .Include(rj => rj.UsedParts)
-                .ToList();
+                .AsQueryable();
+
+            if (User.IsInRole("Worker"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    return Forbid();
+                }
+
+                repairJobsQuery = repairJobsQuery.Where(rj => rj.Technician != null && rj.Technician.UserId == userId);
+            }
+            else if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue)
+                {
+                    return Forbid();
+                }
+
+                repairJobsQuery = repairJobsQuery.Where(rj => rj.Phone != null
+                    && rj.Phone.CustomerId == customerId.Value);
+            }
+
+            var repairJobs = repairJobsQuery.ToList();
 
             return PartialView("_RepairJobCards", repairJobs);
         }
 
         [HttpGet]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             PopulateLookups();
@@ -98,6 +195,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(RepairJob repairJob, int[] usedPartIds)
         {
             if (!ModelState.IsValid)
@@ -116,16 +214,27 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Edit(int id)
         {
             var repairJob = _dbContext.RepairJobs
                 .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.UsedParts)
+            .Include(rj => rj.Technician)
                 .FirstOrDefault(rj => rj.Id == id);
 
             if (repairJob is null)
             {
                 return NotFound();
+            }
+
+            if (User.IsInRole("Worker"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userId) || repairJob.Technician?.UserId != userId)
+                {
+                    return Forbid();
+                }
             }
 
             PopulateLookups(repairJob.PhoneId, repairJob.TechnicianId, repairJob.UsedParts.Select(p => p.Id));
@@ -134,6 +243,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin,Worker")]
         public IActionResult Edit(int id, RepairJob repairJob, int[] usedPartIds)
         {
             if (id != repairJob.Id)
@@ -144,11 +254,26 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             var existingJob = _dbContext.RepairJobs
                 .Where(rj => !rj.IsDeleted)
                 .Include(rj => rj.UsedParts)
+                .Include(rj => rj.Technician)
                 .FirstOrDefault(rj => rj.Id == id);
 
             if (existingJob is null)
             {
                 return NotFound();
+            }
+
+            if (User.IsInRole("Worker"))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrWhiteSpace(userId) || existingJob.Technician?.UserId != userId)
+                {
+                    return Forbid();
+                }
+
+                existingJob.Status = repairJob.Status;
+                existingJob.CompletedDate = repairJob.CompletedDate;
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
 
             if (!ModelState.IsValid)
@@ -173,6 +298,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var repairJob = _dbContext.RepairJobs
@@ -192,6 +318,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id, string deleteMode)
         {
             var repairJob = _dbContext.RepairJobs
@@ -267,6 +394,37 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             }
 
             return _dbContext.SpareParts.Where(sp => ids.Contains(sp.Id)).ToList();
+        }
+
+        private int? EnsureCustomerLink()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return null;
+            }
+
+            var customer = _dbContext.Customers.FirstOrDefault(c => !c.IsDeleted && c.UserId == userId);
+            if (customer != null)
+            {
+                return customer.Id;
+            }
+
+            var email = User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return null;
+            }
+
+            customer = _dbContext.Customers.FirstOrDefault(c => !c.IsDeleted && c.Email == email);
+            if (customer == null)
+            {
+                return null;
+            }
+
+            customer.UserId = userId;
+            _dbContext.SaveChanges();
+            return customer.Id;
         }
     }
 }

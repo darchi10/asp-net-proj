@@ -19,7 +19,10 @@
         </div>
         <h3 class="fw-light">No technicians available</h3>
         <p class="mb-4">You have not hired or added any technicians to the system yet.</p>
-        <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Add a new technician</a>
+               @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Add a new technician</a>
+        }
     </div>
 }
 else
@@ -29,9 +32,12 @@ else
             <h2 class="h3 mb-0 text-white"><i class="bi bi-person-workspace me-2 text-primary"></i>Technician Roster</h2>
             <p class="text-muted small mb-0 mt-1">Manage personnel for device repairs and servicing</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-person-plus me-2"></i>Hire Technician
-        </a>
+               @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-person-plus me-2"></i>Hire Technician
+            </a>
+        }
     </div>
 
     <div class="row g-3 mb-4">

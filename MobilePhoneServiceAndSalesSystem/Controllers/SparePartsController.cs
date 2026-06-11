@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
@@ -7,6 +8,7 @@ using System.Linq;
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("spare-parts")]
+    [Authorize(Roles = "Admin,Worker")]
     public class SparePartsController : Controller
     {
         private readonly AppDbContext _dbContext;
@@ -60,6 +62,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -67,6 +70,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(SparePart sparePart)
         {
             if (!ModelState.IsValid)
@@ -82,6 +86,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var sparePart = _dbContext.SpareParts.FirstOrDefault(sp => sp.Id == id && !sp.IsDeleted);
@@ -96,6 +101,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, SparePart sparePart)
         {
             if (id != sparePart.Id)
@@ -125,6 +131,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var sparePart = _dbContext.SpareParts
@@ -144,6 +151,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id, string deleteMode)
         {
             var sparePart = _dbContext.SpareParts

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Digital Receipt";
+    var canManageFiles = User.IsInRole("Admin");
 }
 
 <div class="container mt-5 mb-5 d-flex justify-content-center">
@@ -61,14 +62,152 @@
     </div>
 </div>
 
+<section class="container mt-5" data-order-id="@Model.Id" data-can-manage="@canManageFiles.ToString().ToLowerInvariant()" id="order-attachments">
+    <div class="card bg-dark text-light border-0 shadow-lg rounded-4">
+        <div class="card-header border-bottom border-secondary px-4 py-3">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold">Order Attachments</h4>
+                    <p class="text-secondary mb-0">Upload receipts or related documents for this order.</p>
+                </div>
+                @if (canManageFiles)
+                {
+                    <span class="badge bg-primary bg-opacity-25 text-primary px-3 py-2">Staff only</span>
+                }
+            </div>
+        </div>
+        <div class="card-body px-4 py-4">
+            @if (canManageFiles)
+            {
+                <form action="@Url.Content($"~/orders/{Model.Id}/files")" class="dropzone order-dropzone" id="order-dropzone"></form>
+            }
+            <div class="order-file-list" id="order-file-list">
+                <div class="text-secondary">Loading files...</div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="text-center mt-4">
-    <a asp-controller="Orders" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-4 me-2">
-        <i class="bi bi-pencil-square me-2"></i>Edit Order
-    </a>
-    <a asp-controller="Orders" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger rounded-pill px-4 me-2">
-        <i class="bi bi-trash3 me-2"></i>Delete Order
-    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Orders" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary rounded-pill px-4 me-2">
+            <i class="bi bi-pencil-square me-2"></i>Edit Order
+        </a>
+    }
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Orders" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger rounded-pill px-4 me-2">
+            <i class="bi bi-trash3 me-2"></i>Delete Order
+        </a>
+    }
     <a asp-controller="Orders" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
         <i class="bi bi-arrow-left me-2"></i>Back to Orders
     </a>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js"></script>
+    <script>
+        (function () {
+            const container = document.getElementById("order-attachments");
+            if (!container) {
+                return;
+            }
+
+            const orderId = container.dataset.orderId;
+            const canManage = container.dataset.canManage === "true";
+            const list = document.getElementById("order-file-list");
+
+            function formatSize(bytes) {
+                if (!bytes && bytes !== 0) return "";
+                const units = ["B", "KB", "MB", "GB"];
+                let size = bytes;
+                let index = 0;
+                while (size >= 1024 && index < units.length - 1) {
+                    size /= 1024;
+                    index++;
+                }
+                return `${size.toFixed(1)} ${units[index]}`;
+            }
+
+            function renderFiles(files) {
+                if (!files.length) {
+                    list.innerHTML = "<div class=\"text-secondary\">No files uploaded yet.</div>";
+                    return;
+                }
+
+                list.innerHTML = files
+                    .map(file => {
+                        const uploaded = new Date(file.uploadedAt).toLocaleString();
+                        const deleteButton = canManage
+                            ? `<button type=\"button\" class=\"btn btn-sm btn-outline-danger\" data-delete=\"${file.id}\">Delete</button>`
+                            : "";
+                        return `
+                            <div class=\"order-file-item\">
+                                <div>
+                                    <div class=\"fw-semibold\"><a href=\"${file.filePath}\" target=\"_blank\" rel=\"noopener\">${file.originalFileName}</a></div>
+                                    <div class=\"text-secondary small\">${formatSize(file.fileSize)} · ${uploaded}</div>
+                                </div>
+                                ${deleteButton}
+                            </div>
+                        `;
+                    })
+                    .join("");
+            }
+
+            function loadFiles() {
+                fetch(`/orders/${orderId}/files`)
+                    .then(response => response.ok ? response.json() : [])
+                    .then(renderFiles)
+                    .catch(() => {
+                        list.innerHTML = "<div class=\"text-danger\">Failed to load files.</div>";
+                    });
+            }
+
+            list.addEventListener("click", function (event) {
+                const button = event.target.closest("[data-delete]");
+                if (!button) {
+                    return;
+                }
+
+                const fileId = button.dataset.delete;
+                fetch(`/orders/files/${fileId}`, { method: "DELETE" })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Delete failed");
+                        }
+                        loadFiles();
+                    })
+                    .catch(() => {
+                        alert("Unable to delete the file.");
+                    });
+            });
+
+            if (canManage && window.Dropzone) {
+                Dropzone.autoDiscover = false;
+                const dropzone = new Dropzone("#order-dropzone", {
+                    url: `/orders/${orderId}/files`,
+                    paramName: "file",
+                    maxFilesize: 10,
+                    acceptedFiles: ".pdf,.png,.jpg,.jpeg",
+                    addRemoveLinks: false,
+                    dictDefaultMessage: "Drop files here or click to upload",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                dropzone.on("success", function () {
+                    loadFiles();
+                });
+            }
+
+            loadFiles();
+        })();
+    </script>
+}

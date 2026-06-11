@@ -1,0 +1,83 @@
+@page
+@model MobilePhoneServiceAndSalesSystem.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Sign In";
+}
+
+<section class="auth-shell">
+    <div class="auth-frame">
+        <div class="auth-hero">
+            <div class="auth-badge">Member access</div>
+            <h1 class="auth-hero-title">Welcome back</h1>
+            <p class="auth-hero-text">
+                Sign in to keep repair requests moving and manage customer orders
+                without losing context.
+            </p>
+            <div class="auth-hero-meta">
+                <div>
+                    <span class="auth-meta-label">Security</span>
+                    <span class="auth-meta-value">Identity protected</span>
+                </div>
+                <div>
+                    <span class="auth-meta-label">Control</span>
+                    <span class="auth-meta-value">Role-based access</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-panel">
+            <h2 class="auth-title">Sign in</h2>
+            <p class="auth-subtitle">Use your email and password to continue.</p>
+
+            <form id="account" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label asp-for="Input.Email" class="auth-label"></label>
+                        <input asp-for="Input.Email" class="form-control auth-input" autocomplete="username" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.Password" class="auth-label"></label>
+                        <input asp-for="Input.Password" class="form-control auth-input" autocomplete="current-password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-check auth-check">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        <label class="form-check-label" asp-for="Input.RememberMe"></label>
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary auth-submit">Sign in</button>
+                    <div class="auth-links">
+                        <a class="auth-link" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Create an account</a>
+                        <a class="auth-link auth-link-muted" asp-page="/Index">Back to home</a>
+                    </div>
+                </div>
+            </form>
+
+            @if (Model.ExternalLogins?.Count > 0)
+            {
+                <div class="auth-divider"><span>Or continue with</span></div>
+                <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div class="auth-provider-list">
+                        @foreach (var provider in Model.ExternalLogins)
+                        {
+                            <button type="submit" class="auth-provider" name="provider" value="@provider.Name">
+                                @provider.DisplayName
+                            </button>
+                        }
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

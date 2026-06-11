@@ -1,4 +1,4 @@
-@model MobilePhoneServiceAndSalesSystem.Models.Technician
+@model MobilePhoneServiceAndSalesSystem.Models.ViewModels.TechnicianCreateViewModel
 
 @{
     ViewData["Title"] = "Create Technician";
@@ -43,6 +43,45 @@
                             <label asp-for="Specialization" class="text-secondary"></label>
                         </div>
                         <span asp-validation-for="Specialization" class="text-danger small mt-1 d-block ms-1"></span>
+                    </div>
+                </div>
+
+                <h5 class="text-primary mb-3 fs-6 text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-shield-lock me-2"></i>Account</h5>
+                <div class="row g-3 mb-4 border-bottom border-secondary pb-4">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Email" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " />
+                            <label asp-for="Email" class="text-secondary"></label>
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small mt-1 d-block ms-1"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="OIB" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " />
+                            <label asp-for="OIB" class="text-secondary"></label>
+                        </div>
+                        <span asp-validation-for="OIB" class="text-danger small mt-1 d-block ms-1"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="JMBG" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " />
+                            <label asp-for="JMBG" class="text-secondary"></label>
+                        </div>
+                        <span asp-validation-for="JMBG" class="text-danger small mt-1 d-block ms-1"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="Password" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " />
+                            <label asp-for="Password" class="text-secondary"></label>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small mt-1 d-block ms-1"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="ConfirmPassword" class="form-control bg-black text-light border-secondary focus-ring-primary" placeholder=" " />
+                            <label asp-for="ConfirmPassword" class="text-secondary"></label>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block ms-1"></span>
                     </div>
                 </div>
 

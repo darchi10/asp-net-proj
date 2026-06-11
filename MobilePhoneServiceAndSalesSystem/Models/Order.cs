@@ -23,5 +23,6 @@ namespace MobilePhoneServiceAndSalesSystem.Models
         public virtual Customer? Customer { get; set; }
 
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public virtual ICollection<OrderAttachment> Attachments { get; set; } = new List<OrderAttachment>();
     }
 }

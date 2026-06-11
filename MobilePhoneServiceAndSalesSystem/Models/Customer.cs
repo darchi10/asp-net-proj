@@ -32,6 +32,9 @@ namespace MobilePhoneServiceAndSalesSystem.Models
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public string? UserId { get; set; }
+        public virtual AppUser? User { get; set; }
+
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
         public virtual ICollection<Phone> Phones { get; set; } = new List<Phone>();
     }

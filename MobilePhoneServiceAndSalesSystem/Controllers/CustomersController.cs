@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
@@ -7,6 +8,7 @@ using System.Linq;
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("customers")]
+    [Authorize(Roles = "Admin")]
     public class CustomersController : Controller
     {
         private readonly AppDbContext _dbContext;
@@ -88,28 +90,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [HttpGet]
-        [Route("create")]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [Route("create")]
-        public IActionResult Create(Customer customer)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(customer);
-            }
-
-            _dbContext.Customers.Add(customer);
-            _dbContext.SaveChanges();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpGet]
         [Route("edit/{id:int}")]
         public IActionResult Edit(int id)
         {
@@ -155,6 +135,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var customer = _dbContext.Customers
@@ -175,6 +156,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id, string deleteMode)
         {
             var customer = _dbContext.Customers

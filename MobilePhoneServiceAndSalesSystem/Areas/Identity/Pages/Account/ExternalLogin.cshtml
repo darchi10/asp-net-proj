@@ -1,0 +1,92 @@
+@page
+@model MobilePhoneServiceAndSalesSystem.Areas.Identity.Pages.Account.ExternalLoginModel
+@{
+    ViewData["Title"] = "Finish Setup";
+}
+
+<section class="auth-shell">
+    <div class="auth-frame">
+        <div class="auth-hero">
+            <div class="auth-badge">External sign-in</div>
+            <h1 class="auth-hero-title">Link your @Model.ProviderDisplayName account</h1>
+            <p class="auth-hero-text">
+                We have your provider details, but we still need your official identifiers to
+                secure service ownership.
+            </p>
+            <div class="auth-hero-meta">
+                <div>
+                    <span class="auth-meta-label">Provider</span>
+                    <span class="auth-meta-value">@Model.ProviderDisplayName</span>
+                </div>
+                <div>
+                    <span class="auth-meta-label">Status</span>
+                    <span class="auth-meta-value">One step left</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-panel">
+            <h2 class="auth-title">Complete your profile</h2>
+            <p class="auth-subtitle">Finish the required fields to connect the account.</p>
+
+            <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label asp-for="Input.FirstName" class="auth-label"></label>
+                        <input asp-for="Input.FirstName" class="form-control auth-input" autocomplete="given-name" />
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.LastName" class="auth-label"></label>
+                        <input asp-for="Input.LastName" class="form-control auth-input" autocomplete="family-name" />
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.Email" class="auth-label"></label>
+                        <input asp-for="Input.Email" class="form-control auth-input" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.PhoneNumber" class="auth-label"></label>
+                        <input asp-for="Input.PhoneNumber" class="form-control auth-input" autocomplete="tel" />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.Address" class="auth-label"></label>
+                        <input asp-for="Input.Address" class="form-control auth-input" autocomplete="street-address" />
+                        <span asp-validation-for="Input.Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.OIB" class="auth-label"></label>
+                        <input asp-for="Input.OIB" class="form-control auth-input" />
+                        <span asp-validation-for="Input.OIB" class="text-danger"></span>
+                        <div class="auth-hint">OIB must be exactly 11 digits.</div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.JMBG" class="auth-label"></label>
+                        <input asp-for="Input.JMBG" class="form-control auth-input" />
+                        <span asp-validation-for="Input.JMBG" class="text-danger"></span>
+                        <div class="auth-hint">JMBG must be exactly 13 digits.</div>
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary auth-submit">Link account</button>
+                    <a class="auth-link" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Back to sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

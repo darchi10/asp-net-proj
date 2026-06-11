@@ -1,19 +1,26 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
+using MobilePhoneServiceAndSalesSystem.Models.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("technicians")]
+    [Authorize(Roles = "Admin")]
     public class TechniciansController : Controller
     {
         private readonly AppDbContext _dbContext;
+        private readonly UserManager<AppUser> _userManager;
 
-        public TechniciansController(AppDbContext dbContext)
+        public TechniciansController(AppDbContext dbContext, UserManager<AppUser> userManager)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
         }
 
         [Route("")]
@@ -62,20 +69,68 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Route("create")]
         public IActionResult Create()
         {
-            return View();
+            return View(new TechnicianCreateViewModel { HireDate = System.DateTime.Now });
         }
 
         [HttpPost]
         [Route("create")]
-        public IActionResult Create(Technician technician)
+        public async Task<IActionResult> Create(TechnicianCreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(technician);
+                return View(model);
             }
 
-            _dbContext.Technicians.Add(technician);
-            _dbContext.SaveChanges();
+            var user = new AppUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                OIB = model.OIB,
+                JMBG = model.JMBG
+            };
+
+            var createUserResult = await _userManager.CreateAsync(user, model.Password);
+            if (!createUserResult.Succeeded)
+            {
+                foreach (var error in createUserResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+
+            var addToRoleResult = await _userManager.AddToRoleAsync(user, "Worker");
+            if (!addToRoleResult.Succeeded)
+            {
+                foreach (var error in addToRoleResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                await _userManager.DeleteAsync(user);
+                return View(model);
+            }
+
+            var technician = new Technician
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Specialization = model.Specialization,
+                HireDate = model.HireDate,
+                Salary = model.Salary,
+                UserId = user.Id
+            };
+
+            try
+            {
+                _dbContext.Technicians.Add(technician);
+                _dbContext.SaveChanges();
+            }
+            catch
+            {
+                await _userManager.DeleteAsync(user);
+                ModelState.AddModelError(string.Empty, "Failed to create the technician record.");
+                return View(model);
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -126,6 +181,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var technician = _dbContext.Technicians
@@ -145,7 +201,8 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id, string deleteMode)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id, string deleteMode)
         {
             var technician = _dbContext.Technicians
                 .Include(t => t.RepairJobs)
@@ -169,13 +226,34 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             {
                 technician.IsDeleted = true;
                 technician.DeletedAt = System.DateTime.UtcNow;
-                _dbContext.SaveChanges();
-                return RedirectToAction(nameof(Index));
             }
 
-            if (technician.RepairJobs.Any())
+            if (!string.IsNullOrWhiteSpace(technician.UserId))
+            {
+                var user = await _userManager.FindByIdAsync(technician.UserId);
+                if (user != null)
+                {
+                    technician.UserId = null;
+                    _dbContext.SaveChanges();
+                    var deleteUserResult = await _userManager.DeleteAsync(user);
+                    if (!deleteUserResult.Succeeded)
+                    {
+                        TempData["Error"] = "Failed to delete the linked account.";
+                        return RedirectToAction(nameof(Delete), new { id });
+                    }
+                }
+            }
+
+            if (!string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase)
+                && technician.RepairJobs.Any())
             {
                 _dbContext.RepairJobs.RemoveRange(technician.RepairJobs);
+            }
+
+            if (string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase))
+            {
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
 
             _dbContext.Technicians.Remove(technician);

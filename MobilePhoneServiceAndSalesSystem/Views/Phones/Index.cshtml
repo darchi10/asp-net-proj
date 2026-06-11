@@ -19,7 +19,10 @@
         </div>
         <h3 class="fw-light">No phones found</h3>
         <p class="mb-4">No phones have been registered in the system yet.</p>
-        <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Register a phone</a>
+        @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Register a phone</a>
+            }
     </div>
 }
 else
@@ -29,9 +32,12 @@ else
             <h2 class="h3 mb-0 text-white"><i class="bi bi-phone me-2 text-primary"></i>Registered Phones</h2>
             <p class="text-muted small mb-0 mt-1">Manage customer devices in the system</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-plus-circle me-2"></i>Register Phone
-        </a>
+        @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i>Register Phone
+                </a>
+            }
     </div>
 
     <div class="row g-3 mb-4">

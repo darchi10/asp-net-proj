@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.Models;
 
 namespace MobilePhoneServiceAndSalesSystem.DAL
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         protected AppDbContext() {}
 
@@ -18,5 +19,6 @@ namespace MobilePhoneServiceAndSalesSystem.DAL
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OrderAttachment> OrderAttachments { get; set; }
     }
 }

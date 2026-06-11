@@ -1,0 +1,104 @@
+@page
+@model MobilePhoneServiceAndSalesSystem.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<section class="auth-shell">
+    <div class="auth-frame">
+        <div class="auth-hero">
+            <div class="auth-badge">Secure access</div>
+            <h1 class="auth-hero-title">Join MobiService</h1>
+            <p class="auth-hero-text">
+                Create a profile to track repairs, manage purchases, and keep all service history
+                in one place.
+            </p>
+            <div class="auth-hero-meta">
+                <div>
+                    <span class="auth-meta-label">Identity</span>
+                    <span class="auth-meta-value">Verified OIB/JMBG</span>
+                </div>
+                <div>
+                    <span class="auth-meta-label">Access</span>
+                    <span class="auth-meta-value">Role-based actions</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-panel">
+            <h2 class="auth-title">Create your account</h2>
+            <p class="auth-subtitle">Use your official details so we can keep service records consistent.</p>
+
+            <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="auth-validation"></div>
+
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label asp-for="Input.FirstName" class="auth-label"></label>
+                        <input asp-for="Input.FirstName" class="form-control auth-input" autocomplete="given-name" />
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.LastName" class="auth-label"></label>
+                        <input asp-for="Input.LastName" class="form-control auth-input" autocomplete="family-name" />
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.Email" class="auth-label"></label>
+                        <input asp-for="Input.Email" class="form-control auth-input" autocomplete="username" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.PhoneNumber" class="auth-label"></label>
+                        <input asp-for="Input.PhoneNumber" class="form-control auth-input" autocomplete="tel" />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.Address" class="auth-label"></label>
+                        <input asp-for="Input.Address" class="form-control auth-input" autocomplete="street-address" />
+                        <span asp-validation-for="Input.Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.OIB" class="auth-label"></label>
+                        <input asp-for="Input.OIB" class="form-control auth-input" />
+                        <span asp-validation-for="Input.OIB" class="text-danger"></span>
+                        <div class="auth-hint">OIB must be exactly 11 digits.</div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.JMBG" class="auth-label"></label>
+                        <input asp-for="Input.JMBG" class="form-control auth-input" />
+                        <span asp-validation-for="Input.JMBG" class="text-danger"></span>
+                        <div class="auth-hint">JMBG must be exactly 13 digits.</div>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.Password" class="auth-label"></label>
+                        <input asp-for="Input.Password" class="form-control auth-input" autocomplete="new-password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="auth-field">
+                        <label asp-for="Input.ConfirmPassword" class="auth-label"></label>
+                        <input asp-for="Input.ConfirmPassword" class="form-control auth-input" autocomplete="new-password" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-primary auth-submit">Create account</button>
+                    <a class="auth-link" asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Already have an account? Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

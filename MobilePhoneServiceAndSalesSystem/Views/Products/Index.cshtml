@@ -19,7 +19,10 @@
         </div>
         <h3 class="fw-light">No products available</h3>
         <p class="mb-4">You haven't added any products to your inventory yet.</p>
-        <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Create your first product</a>
+                @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-outline-primary rounded-pill px-4">Create your first product</a>
+        }
     </div>
 }
 else
@@ -29,9 +32,12 @@ else
             <h2 class="h3 mb-0 text-white"><i class="bi bi-shop me-2 text-primary"></i>Product Inventory</h2>
             <p class="text-muted small mb-0 mt-1">Manage items available for sale</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-plus-lg me-2"></i>Add Product
-        </a>
+                @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus-lg me-2"></i>Add Product
+            </a>
+        }
     </div>
 
     <div class="row g-3 mb-4">

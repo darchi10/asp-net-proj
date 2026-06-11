@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
@@ -7,6 +8,7 @@ using System.Linq;
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
     [Route("phones")]
+    [Authorize(Roles = "Admin")]
     public class PhonesController : Controller
     {
         private readonly AppDbContext _dbContext;
@@ -150,6 +152,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var phone = _dbContext.Phones
@@ -170,6 +173,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id, string deleteMode)
         {
             var phone = _dbContext.Phones

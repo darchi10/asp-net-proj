@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
@@ -17,6 +18,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [Route("")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var products = _dbContext.Products
@@ -27,6 +29,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         }
 
         [Route("{id:int}")]
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var product = _dbContext.Products
@@ -44,6 +47,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("search-list")]
+        [AllowAnonymous]
         public IActionResult SearchList(string? term)
         {
             var query = term?.Trim() ?? string.Empty;
@@ -58,6 +62,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -65,6 +70,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(Product product)
         {
             if (!ModelState.IsValid)
@@ -80,6 +86,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id)
         {
             var product = _dbContext.Products.FirstOrDefault(p => p.Id == id && !p.IsDeleted);
@@ -94,6 +101,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("edit/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(int id, Product product)
         {
             if (id != product.Id)
@@ -123,6 +131,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("delete/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             var product = _dbContext.Products
@@ -142,6 +151,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         [Route("delete/{id:int}")]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id, string deleteMode)
         {
             var product = _dbContext.Products

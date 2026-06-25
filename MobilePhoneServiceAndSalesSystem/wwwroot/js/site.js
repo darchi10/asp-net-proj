@@ -284,3 +284,135 @@
 
 	initDatePickers();
 })();
+
+// =================================
+// MOBILE RESPONSIVE ENHANCEMENTS
+// =================================
+
+(function() {
+	// Prevent double-tap zoom on buttons and links (iOS Safari)
+	document.addEventListener('touchend', function(e) {
+		if (e.target.matches('button, a, .btn, .nav-link')) {
+			e.preventDefault();
+			e.target.click();
+		}
+	}, { passive: false });
+
+	// Auto-collapse navbar on mobile after link click
+	const navbarToggler = document.querySelector('.navbar-toggler');
+	const navbarCollapse = document.querySelector('.navbar-collapse');
+	
+	if (navbarToggler && navbarCollapse) {
+		document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+			link.addEventListener('click', function() {
+				if (window.innerWidth < 576 && navbarCollapse.classList.contains('show')) {
+					navbarToggler.click();
+				}
+			});
+		});
+	}
+
+	// Add visual feedback for touch events
+	document.querySelectorAll('.card, .btn, .nav-link').forEach(element => {
+		element.addEventListener('touchstart', function() {
+			this.style.opacity = '0.8';
+		}, { passive: true });
+
+		element.addEventListener('touchend', function() {
+			setTimeout(() => {
+				this.style.opacity = '';
+			}, 150);
+		}, { passive: true });
+	});
+
+	// Smooth scroll behavior for anchor links
+	document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener('click', function(e) {
+			const targetId = this.getAttribute('href');
+			if (targetId !== '#' && targetId !== '#!') {
+				const target = document.querySelector(targetId);
+				if (target) {
+					e.preventDefault();
+					target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			}
+		});
+	});
+
+	// Detect viewport size changes and adjust layout
+	let resizeTimer;
+	window.addEventListener('resize', function() {
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(function() {
+			// Re-trigger any layout-dependent calculations
+			document.body.classList.toggle('mobile', window.innerWidth < 768);
+		}, 250);
+	});
+
+	// Initial check
+	document.body.classList.toggle('mobile', window.innerWidth < 768);
+
+	// Handle orientation change
+	window.addEventListener('orientationchange', function() {
+		setTimeout(function() {
+			// Force repaint after orientation change
+			document.body.style.display = 'none';
+			document.body.offsetHeight; // Force reflow
+			document.body.style.display = '';
+		}, 100);
+	});
+
+	// Improve form input focus on mobile
+	if ('ontouchstart' in window) {
+		document.querySelectorAll('input, textarea, select').forEach(input => {
+			input.addEventListener('focus', function() {
+				// Scroll input into view on mobile
+				setTimeout(() => {
+					this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}, 300);
+			});
+		});
+	}
+
+	// Add pull-to-refresh indicator (visual only)
+	let touchStartY = 0;
+	let touchEndY = 0;
+
+	document.addEventListener('touchstart', function(e) {
+		touchStartY = e.touches[0].clientY;
+	}, { passive: true });
+
+	document.addEventListener('touchmove', function(e) {
+		touchEndY = e.touches[0].clientY;
+	}, { passive: true });
+
+	// Optimize scroll performance
+	let ticking = false;
+	document.addEventListener('scroll', function() {
+		if (!ticking) {
+			window.requestAnimationFrame(function() {
+				// Add scroll-based effects here if needed
+				const navbar = document.querySelector('.navbar');
+				if (navbar) {
+					navbar.classList.toggle('scrolled', window.scrollY > 50);
+				}
+				ticking = false;
+			});
+			ticking = true;
+		}
+	}, { passive: true });
+
+})();
+
+
+// iOS Safari viewport height fix
+function setVH() {
+	const vh = window.innerHeight * 0.01;
+	document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+setVH();
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', function() {
+	setTimeout(setVH, 100);
+});

@@ -5,6 +5,11 @@ using MobilePhoneServiceAndSalesSystem.Models;
 
 namespace MobilePhoneServiceAndSalesSystem.Models.DTOs
 {
+    public sealed class AiParseRequest
+    {
+        public string Input { get; set; } = string.Empty;
+    }
+
     public sealed class ProductDto
     {
         [Required]

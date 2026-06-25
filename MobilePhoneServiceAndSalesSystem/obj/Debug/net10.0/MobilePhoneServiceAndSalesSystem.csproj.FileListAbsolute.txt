@@ -184,7 +184,6 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\tr\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
-C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-d7z77dgvpp-d7z77dgvpp.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Microsoft.AspNetCore.Identity.UI.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.MvcApplicationPartsAssemblyInfo.cs
@@ -251,7 +250,6 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\v0zgfp0y55-{0}-87fc7y1x7t-87fc7y1x7t.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\yfc7ypekbg-{0}-mlv21k5csn-mlv21k5csn.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.Google.dll
-C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\or4pea7v0x-{0}-0ze8cmepvi-0ze8cmepvi.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Microsoft.EntityFrameworkCore.InMemory.dll
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\appsettings.json
@@ -511,3 +509,5 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Sinks.Console.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Sinks.Debug.dll
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Sinks.File.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\or4pea7v0x-{0}-9cqixib9uh-9cqixib9uh.gz
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-t7akqswui3-t7akqswui3.gz

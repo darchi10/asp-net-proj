@@ -20,6 +20,26 @@
             </div>
         </div>
         <div class="card-body p-4 p-md-5">
+            <!-- AI Assistant Panel -->
+            <div class="alert alert-info bg-info bg-opacity-10 border-info rounded-4 mb-4">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="text-info fs-3">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold mb-2 text-info">AI Phone Parser</h6>
+                        <p class="small mb-3 text-light">Describe the phone in natural language, AI will extract the details.</p>
+                        <div class="input-group mb-2">
+                            <input type="text" id="ai-input" class="form-control bg-black text-light border-secondary" placeholder="e.g., Samsung S23 for customer ID 5, IMEI 123456789012345, 2023, Android 13" />
+                            <button type="button" id="ai-parse-btn" class="btn btn-info">
+                                <i class="bi bi-magic me-1"></i> Parse
+                            </button>
+                        </div>
+                        <div id="ai-status" class="small"></div>
+                    </div>
+                </div>
+            </div>
+
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger text-light rounded-3 mb-4"></div>
 
@@ -93,6 +113,69 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('ai-parse-btn').addEventListener('click', async function() {
+            const input = document.getElementById('ai-input').value.trim();
+            const status = document.getElementById('ai-status');
+            const btn = this;
+
+            if (!input) {
+                status.innerHTML = '<span class="text-warning">Please enter a description</span>';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
+            status.innerHTML = '<span class="text-info">AI is parsing your input...</span>';
+
+            try {
+                const response = await fetch('/phones/ai-parse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input: input })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.querySelector('[name="Brand"]').value = data.brand || '';
+                    document.querySelector('[name="Model"]').value = data.model || '';
+                    document.querySelector('[name="IMEI"]').value = data.imei || '';
+                    document.querySelector('[name="YearOfManufacture"]').value = data.yearOfManufacture || '';
+                    document.querySelector('[name="OperatingSystem"]').value = data.operatingSystem || '';
+                    
+                    // Popuni customer
+                    if (data.customerId && data.customerText) {
+                        document.querySelector('[name="CustomerId"]').value = data.customerId;
+                        document.querySelector('.autocomplete-input').value = data.customerText;
+                        const idNote = data.explicitId ? ' (ID: ' + data.explicitId + ')' : '';
+                        status.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i> Form filled! Customer: ' + data.customerText + idNote + '</span>';
+                    } else if (data.explicitId) {
+                        status.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i> Customer ID ' + data.explicitId + ' not found in database</span>';
+                    } else if (data.customerSearchTerm) {
+                        document.querySelector('.autocomplete-input').value = data.customerSearchTerm;
+                        status.innerHTML = '<span class="text-warning"><i class="bi bi-info-circle me-1"></i> Form filled! Customer "' + data.customerSearchTerm + '" not found - please select from dropdown</span>';
+                    } else {
+                        status.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i> Form filled! Select customer manually</span>';
+                    }
+                } else {
+                    const error = await response.json();
+                    status.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i> ' + (error.error || 'Failed to parse') + '</span>';
+                }
+            } catch (err) {
+                status.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i> Network error</span>';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-magic me-1"></i> Parse';
+            }
+        });
+
+        document.getElementById('ai-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('ai-parse-btn').click();
+            }
+        });
+    </script>
 }
 
 <style>

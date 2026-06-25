@@ -7,6 +7,17 @@ using MobilePhoneServiceAndSalesSystem.Models.Enums;
 
 namespace MobilePhoneServiceAndSalesSystem.Models.DTOs
 {
+    public sealed class PhoneAiDto
+    {
+        public string Brand { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+        public string Imei { get; set; } = string.Empty;
+        public int YearOfManufacture { get; set; }
+        public string OperatingSystem { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public int? CustomerId { get; set; }
+    }
+
     public sealed class PhoneDto
     {
         [Required]

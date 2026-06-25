@@ -32,6 +32,8 @@ var localizationOptions = new RequestLocalizationOptions
 };
 
 builder.Services.AddScoped<CrudActionLoggingFilter>();
+builder.Services.AddScoped<MobilePhoneServiceAndSalesSystem.Infrastructure.AI.GroqAiService>();
+builder.Services.AddHttpClient();
 
 builder.Services.AddControllersWithViews(options =>
 {

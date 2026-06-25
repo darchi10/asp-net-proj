@@ -502,3 +502,12 @@ C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneSer
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.dll
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\refint\MobilePhoneServiceAndSalesSystem.dll
 C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.pdb
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.AspNetCore.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Extensions.Hosting.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Extensions.Logging.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Formatting.Compact.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Settings.Configuration.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Sinks.Console.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Sinks.Debug.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Serilog.Sinks.File.dll

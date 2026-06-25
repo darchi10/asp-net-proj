@@ -3,9 +3,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
+using MobilePhoneServiceAndSalesSystem.Infrastructure.Logging;
 using MobilePhoneServiceAndSalesSystem.Models;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+{
+    loggerConfiguration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
 
 var supportedCultures = new[]
 {
@@ -20,7 +31,12 @@ var localizationOptions = new RequestLocalizationOptions
     SupportedUICultures = supportedCultures
 };
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<CrudActionLoggingFilter>();
+
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<CrudActionLoggingFilter>();
+});
 builder.Services.AddRazorPages();
 
 if (builder.Environment.IsEnvironment("Testing"))
@@ -59,6 +75,27 @@ if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(goo
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.GetLevel = (httpContext, elapsed, exception) =>
+    {
+        if (exception is not null || httpContext.Response.StatusCode >= 500)
+        {
+            return LogEventLevel.Error;
+        }
+
+        return httpContext.Response.StatusCode >= 400
+            ? LogEventLevel.Warning
+            : LogEventLevel.Information;
+    };
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("UserName", httpContext.User.Identity?.Name ?? "Anonymous");
+        diagnosticContext.Set("RemoteIpAddress", httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+    };
+});
+
 using (var scope = app.Services.CreateScope())
 {
     await IdentitySeeder.SeedRolesAsync(scope.ServiceProvider);
@@ -71,6 +108,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseMiddleware<UnhandledExceptionLoggingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseRouting();

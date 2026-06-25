@@ -9,14 +9,13 @@ namespace MobilePhoneServiceAndSalesSystem.IntegrationTests
 {
     public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public const string Scheme = "Test";
+        public new const string Scheme = "Test";
 
         public TestAuthHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
+            UrlEncoder encoder)
+            : base(options, logger, encoder)
         {
         }
 

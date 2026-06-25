@@ -1,16 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
-using System;
-using System.IO;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {

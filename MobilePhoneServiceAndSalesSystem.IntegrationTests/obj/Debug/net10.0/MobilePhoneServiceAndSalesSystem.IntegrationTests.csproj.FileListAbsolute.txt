@@ -431,3 +431,6 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem.IntegrationTests\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.IntegrationTests.pdb
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem.IntegrationTests\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.IntegrationTests.genruntimeconfig.cache
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem.IntegrationTests\obj\Debug\net10.0\ref\MobilePhoneServiceAndSalesSystem.IntegrationTests.dll
+C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem.IntegrationTests\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.IntegrationTests.dll
+C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem.IntegrationTests\obj\Debug\net10.0\refint\MobilePhoneServiceAndSalesSystem.IntegrationTests.dll
+C:\Users\CodexSandboxOffline\.codex\.sandbox\cwd\5fd041204dc574e6\MobilePhoneServiceAndSalesSystem.IntegrationTests\obj\Debug\net10.0\MobilePhoneServiceAndSalesSystem.IntegrationTests.pdb

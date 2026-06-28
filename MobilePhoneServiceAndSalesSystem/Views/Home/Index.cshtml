@@ -1,5 +1,9 @@
 @{
     ViewData["Title"] = "Dashboard";
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var isAdmin = User.IsInRole("Admin");
+    var isWorker = User.IsInRole("Worker");
+    var isCustomer = User.IsInRole("Customer");
 }
 
 <div class="container py-5">
@@ -11,72 +15,181 @@
     </div>
 
     <div class="row g-4 mt-2">
-        <!-- Service & Repairs -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="RepairJobs" asp-action="Index" class="text-decoration-none">
-                <div class="retail-card p-4">
-                    <div class="retail-card-icon">🔧</div>
-                    <h3 class="retail-card-title">Repair Jobs</h3>
-                    <p class="retail-card-text">Track current and past service tickets, update their statuses, and manage workflow.</p>
-                </div>
-            </a>
-        </div>
 
-        <!-- Sales & Store -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="Products" asp-action="Index" class="text-decoration-none">
-                <div class="retail-card p-4">
-                    <div class="retail-card-icon">📱</div>
-                    <h3 class="retail-card-title">Products Store</h3>
-                    <p class="retail-card-text">Explore inventory, feature new phones and accessories, and process sales.</p>
-                </div>
-            </a>
-        </div>
+        @if (!isSignedIn)
+        {
+            @* Anonymous users see ALL cards — clicking a restricted one redirects to login *@
 
-        <!-- Orders -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="Orders" asp-action="Index" class="text-decoration-none">
-                <div class="retail-card p-4">
-                    <div class="retail-card-icon">📦</div>
-                    <h3 class="retail-card-title">Manage Orders</h3>
-                    <p class="retail-card-text">Keep track of customer purchases and review order histories effortlessly.</p>
-                </div>
-            </a>
-        </div>
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="RepairJobs" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">🔧</div>
+                        <h3 class="retail-card-title">Repair Jobs</h3>
+                        <p class="retail-card-text">Track current and past service tickets, update their statuses, and manage workflow.</p>
+                    </div>
+                </a>
+            </div>
 
-        <!-- Customers -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="Customers" asp-action="Index" class="text-decoration-none">
-                <div class="retail-card p-4">
-                    <div class="retail-card-icon">👥</div>
-                    <h3 class="retail-card-title">Customers</h3>
-                    <p class="retail-card-text">Manage your client database, communications, and customer histories.</p>
-                </div>
-            </a>
-        </div>
-        
-        <!-- Inventory / Spare Parts -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="SpareParts" asp-action="Index" class="text-decoration-none">
-                <div class="retail-card p-4">
-                    <div class="retail-card-icon">⚙️</div>
-                    <h3 class="retail-card-title">Spare Parts</h3>
-                    <p class="retail-card-text">Keep your service inventory stocked. Manage parts and usage for tech repairs.</p>
-                </div>
-            </a>
-        </div>
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Products" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">📱</div>
+                        <h3 class="retail-card-title">Products Store</h3>
+                        <p class="retail-card-text">Explore inventory, feature new phones and accessories, and process sales.</p>
+                    </div>
+                </a>
+            </div>
 
-        <!-- Technicians -->
-        <div class="col-md-6 col-lg-4">
-            <a asp-controller="Technicians" asp-action="Index" class="text-decoration-none">
-                <div class="retail-card p-4">
-                    <div class="retail-card-icon">🧑‍🔧</div>
-                    <h3 class="retail-card-title">Technicians</h3>
-                    <p class="retail-card-text">View your team, assign jobs, and overview personnel performance.</p>
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Orders" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">📦</div>
+                        <h3 class="retail-card-title">Manage Orders</h3>
+                        <p class="retail-card-text">Keep track of customer purchases and review order histories effortlessly.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Customers" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">👥</div>
+                        <h3 class="retail-card-title">Customers</h3>
+                        <p class="retail-card-text">Manage your client database, communications, and customer histories.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="SpareParts" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">⚙️</div>
+                        <h3 class="retail-card-title">Spare Parts</h3>
+                        <p class="retail-card-text">Keep your service inventory stocked. Manage parts and usage for tech repairs.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Technicians" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">🧑‍🔧</div>
+                        <h3 class="retail-card-title">Technicians</h3>
+                        <p class="retail-card-text">View your team, assign jobs, and overview personnel performance.</p>
+                    </div>
+                </a>
+            </div>
+        }
+        else
+        {
+            @* Logged-in users see only cards they're authorised to access *@
+
+            @* Products Store — AllowAnonymous, always visible *@
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="Products" asp-action="Index" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">📱</div>
+                        <h3 class="retail-card-title">Products Store</h3>
+                        <p class="retail-card-text">Explore inventory, feature new phones and accessories, and process sales.</p>
+                    </div>
+                </a>
+            </div>
+
+            @* Track Repair — AllowAnonymous, always visible *@
+            <div class="col-md-6 col-lg-4">
+                <a asp-controller="RepairJobs" asp-action="Tracker" class="text-decoration-none">
+                    <div class="retail-card p-4">
+                        <div class="retail-card-icon">🔍</div>
+                        <h3 class="retail-card-title">Track Your Repair</h3>
+                        <p class="retail-card-text">Quickly look up the current status of your repair job by entering your ticket ID.</p>
+                    </div>
+                </a>
+            </div>
+
+            @* Repair Jobs — Admin, Worker, Customer *@
+            @if (isAdmin || isWorker || isCustomer)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="RepairJobs" asp-action="Index" class="text-decoration-none">
+                        <div class="retail-card p-4">
+                            <div class="retail-card-icon">🔧</div>
+                            <h3 class="retail-card-title">Repair Jobs</h3>
+                            <p class="retail-card-text">Track current and past service tickets, update their statuses, and manage workflow.</p>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
+            }
+
+            @* Orders — Admin, Customer *@
+            @if (isAdmin || isCustomer)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Orders" asp-action="Index" class="text-decoration-none">
+                        <div class="retail-card p-4">
+                            <div class="retail-card-icon">📦</div>
+                            <h3 class="retail-card-title">Manage Orders</h3>
+                            <p class="retail-card-text">Keep track of customer purchases and review order histories effortlessly.</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @* Spare Parts — Admin, Worker *@
+            @if (isAdmin || isWorker)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="SpareParts" asp-action="Index" class="text-decoration-none">
+                        <div class="retail-card p-4">
+                            <div class="retail-card-icon">⚙️</div>
+                            <h3 class="retail-card-title">Spare Parts</h3>
+                            <p class="retail-card-text">Keep your service inventory stocked. Manage parts and usage for tech repairs.</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @* Customers — Admin only *@
+            @if (isAdmin)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Customers" asp-action="Index" class="text-decoration-none">
+                        <div class="retail-card p-4">
+                            <div class="retail-card-icon">👥</div>
+                            <h3 class="retail-card-title">Customers</h3>
+                            <p class="retail-card-text">Manage your client database, communications, and customer histories.</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @* Technicians — Admin only *@
+            @if (isAdmin)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Technicians" asp-action="Index" class="text-decoration-none">
+                        <div class="retail-card p-4">
+                            <div class="retail-card-icon">🧑‍🔧</div>
+                            <h3 class="retail-card-title">Technicians</h3>
+                            <p class="retail-card-text">View your team, assign jobs, and overview personnel performance.</p>
+                        </div>
+                    </a>
+                </div>
+            }
+
+            @* Phones — Admin, Worker *@
+            @if (isAdmin || isWorker)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Phones" asp-action="Index" class="text-decoration-none">
+                        <div class="retail-card p-4">
+                            <div class="retail-card-icon">📲</div>
+                            <h3 class="retail-card-title">Registered Phones</h3>
+                            <p class="retail-card-text">Browse and manage all customer devices registered in the service system.</p>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+
     </div>
 </div>
-
-

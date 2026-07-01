@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using ModelContextProtocol.AspNetCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Infrastructure.Logging;
 using MobilePhoneServiceAndSalesSystem.Models;
@@ -34,6 +35,11 @@ var localizationOptions = new RequestLocalizationOptions
 builder.Services.AddScoped<CrudActionLoggingFilter>();
 builder.Services.AddScoped<MobilePhoneServiceAndSalesSystem.Infrastructure.AI.GroqAiService>();
 builder.Services.AddHttpClient();
+
+// MCP Server Configuration
+builder.Services.AddMcpServer()
+    .WithHttpTransport()
+    .WithToolsFromAssembly();
 
 builder.Services.AddControllersWithViews(options =>
 {
@@ -120,6 +126,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+// MCP Endpoint - accessible at /mcp for AI agents
+app.MapMcp("/mcp");
 
 app.MapControllers();
 

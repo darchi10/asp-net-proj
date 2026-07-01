@@ -513,3 +513,7 @@ C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSale
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\ksgtl16r7g-{0}-t7akqswui3-t7akqswui3.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\d2j8bmr75c-{0}-tr4c332lwp-tr4c332lwp.gz
 C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\obj\Debug\net10.0\compressed\4s0djp6i3r-{0}-866hvbqvml-866hvbqvml.gz
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\Microsoft.Extensions.AI.Abstractions.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\ModelContextProtocol.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\ModelContextProtocol.AspNetCore.dll
+C:\Users\Dario\Desktop\faks\6.semestar\ASP.NET\projekt\MobilePhoneServiceAndSalesSystem\bin\Debug\net10.0\ModelContextProtocol.Core.dll

@@ -40,45 +40,53 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-center">
                     <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
                         <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "Home" ? "active fw-semibold" : string.Empty)" href="~/">Home</a>
+                            <a class="nav-link px-3 @(currentController == "Home" ? "active fw-semibold" : string.Empty)" href="~/"><i class="bi bi-house me-2"></i>Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link px-3 @(currentController == "Products" ? "active fw-semibold" : string.Empty)" href="~/products">Store</a>
+                            <a class="nav-link px-3 @(currentController == "Products" ? "active fw-semibold" : string.Empty)" href="~/products"><i class="bi bi-shop me-2"></i>Store</a>
                         </li>
-                        @if (isAdmin)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 @(currentController == "Customers" ? "active fw-semibold" : string.Empty)" href="~/customers">Customers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 @(currentController == "Phones" ? "active fw-semibold" : string.Empty)" href="~/phones">Phones</a>
-                            </li>
-                        }
                         @if (isAdmin || isWorker || isCustomer)
                         {
                             <li class="nav-item">
-                                <a class="nav-link px-3 @(currentController == "RepairJobs" && currentAction != "Tracker" ? "active fw-semibold" : string.Empty)" href="~/repair-jobs">Repairs</a>
+                                <a class="nav-link px-3 @(currentController == "RepairJobs" && currentAction != "Tracker" ? "active fw-semibold" : string.Empty)" href="~/repair-jobs"><i class="bi bi-tools me-2"></i>Repairs</a>
+                            </li>
+                        }
+                        @if (isCustomer && !isAdmin && !isWorker)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "Orders" ? "active fw-semibold" : string.Empty)" href="~/orders"><i class="bi bi-cart me-2"></i>Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 fw-medium @(currentController == "RepairJobs" && currentAction == "Tracker" ? "active fw-bold text-primary" : "text-warning")" href="~/repair-jobs/tracker"><i class="bi bi-search me-2"></i>Track Repair</a>
                             </li>
                         }
                         @if (isAdmin || isWorker)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 @(currentController == "SpareParts" ? "active fw-semibold" : string.Empty)" href="~/spare-parts">Spare Parts</a>
-                            </li>
-                        }
-                        @if (isAdmin || isCustomer)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 @(currentController == "Orders" ? "active fw-semibold" : string.Empty)" href="~/orders">Orders</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 fw-medium @(currentController == "RepairJobs" && currentAction == "Tracker" ? "active fw-bold text-primary" : "text-warning")" href="~/repair-jobs/tracker">Track Repair</a>
-                            </li>
-                        }
-                        @if (isAdmin)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 @(currentController == "Technicians" ? "active fw-semibold" : string.Empty)" href="~/technicians">Technicians</a>
+                            var isManagementActive = currentController == "Customers" || currentController == "Phones" || currentController == "SpareParts" || currentController == "Technicians" || currentController == "Orders" || (currentController == "RepairJobs" && currentAction == "Tracker");
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle px-3 @(isManagementActive ? "active fw-semibold" : string.Empty)" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Management
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    @if (isAdmin)
+                                    {
+                                        <li><a class="dropdown-item @(currentController == "Customers" ? "active" : string.Empty)" href="~/customers"><i class="bi bi-people me-2"></i>Customers</a></li>
+                                        <li><a class="dropdown-item @(currentController == "Phones" ? "active" : string.Empty)" href="~/phones"><i class="bi bi-phone me-2"></i>Phones</a></li>
+                                    }
+                                    @if (isAdmin || isWorker)
+                                    {
+                                        <li><a class="dropdown-item @(currentController == "SpareParts" ? "active" : string.Empty)" href="~/spare-parts"><i class="bi bi-gear me-2"></i>Spare Parts</a></li>
+                                    }
+                                    @if (isAdmin || isCustomer)
+                                    {
+                                        <li><a class="dropdown-item @(currentController == "Orders" ? "active" : string.Empty)" href="~/orders"><i class="bi bi-cart me-2"></i>Orders</a></li>
+                                        <li><a class="dropdown-item @(currentController == "RepairJobs" && currentAction == "Tracker" ? "active" : string.Empty)" href="~/repair-jobs/tracker"><i class="bi bi-search me-2"></i>Track Repair</a></li>
+                                    }
+                                    @if (isAdmin)
+                                    {
+                                        <li><a class="dropdown-item @(currentController == "Technicians" ? "active" : string.Empty)" href="~/technicians"><i class="bi bi-person-badge me-2"></i>Technicians</a></li>
+                                    }
+                                </ul>
                             </li>
                         }
                     </ul>

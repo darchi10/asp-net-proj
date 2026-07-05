@@ -106,7 +106,13 @@ app.UseSerilogRequestLogging(options =>
 
 using (var scope = app.Services.CreateScope())
 {
-    await IdentitySeeder.SeedRolesAsync(scope.ServiceProvider);
+    var services = scope.ServiceProvider;
+    if (!app.Environment.IsEnvironment("Testing"))
+    {
+        var db = services.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+    }
+    await IdentitySeeder.SeedRolesAsync(services);
 }
 
 app.UseRequestLocalization(localizationOptions);

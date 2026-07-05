@@ -1,0 +1,46 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main          # deploy se trigerira pri pushanju na main
+  workflow_dispatch:  # možeš i ručno pokrenuti iz GitHub UI
+
+env:
+  AZURE_WEBAPP_NAME: mobile-service-sale-app    # ← PROMIJENI ako je tvoj App Service na Azureu drugačijeg naziva
+  DOTNET_VERSION: '10.0.x'                  # ← Postavljeno na 10.0.x jer tvoj projekt koristi .NET 10.0
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Dohvati kod
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Postavi .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      # 3. Restore NuGet paketa (ciljano na glavni projekt)
+      - name: Restore
+        run: dotnet restore MobilePhoneServiceAndSalesSystem/MobilePhoneServiceAndSalesSystem.csproj
+
+      # 4. Build projekta
+      - name: Build
+        run: dotnet build MobilePhoneServiceAndSalesSystem/MobilePhoneServiceAndSalesSystem.csproj --configuration Release --no-restore
+
+      # 5. Publish (pripremi za deploy)
+      - name: Publish
+        run: dotnet publish MobilePhoneServiceAndSalesSystem/MobilePhoneServiceAndSalesSystem.csproj --configuration Release --output ./publish
+
+      # 6. Deploy na Azure App Service
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish

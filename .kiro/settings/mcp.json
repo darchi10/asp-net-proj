@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "mobile-service": {
+      "url": "http://localhost:5135/mcp"
+    }
+  }
+}

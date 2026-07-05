@@ -106,13 +106,16 @@ app.UseSerilogRequestLogging(options =>
 
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    if (!app.Environment.IsEnvironment("Testing"))
+    try
     {
-        var db = services.GetRequiredService<AppDbContext>();
-        await db.Database.MigrateAsync();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
     }
-    await IdentitySeeder.SeedRolesAsync(services);
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Greška pri migraciji baze — app nastavlja raditi");
+    }
 }
 
 app.UseRequestLocalization(localizationOptions);

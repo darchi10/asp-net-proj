@@ -110,6 +110,8 @@ using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.Migrate();
+
+        await IdentitySeeder.SeedRolesAsync(scope.ServiceProvider);
     }
     catch (Exception ex)
     {

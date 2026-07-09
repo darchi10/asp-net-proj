@@ -62,6 +62,9 @@
                         }
                         @if (isAdmin || isWorker)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link px-3 @(currentController == "Ai" ? "active fw-semibold" : string.Empty)" href="~/ai"><i class="bi bi-robot me-2"></i>AI Assistant</a>
+                            </li>
                             var isManagementActive = currentController == "Customers" || currentController == "Phones" || currentController == "SpareParts" || currentController == "Technicians" || currentController == "Orders" || (currentController == "RepairJobs" && currentAction == "Tracker");
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle px-3 @(isManagementActive ? "active fw-semibold" : string.Empty)" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

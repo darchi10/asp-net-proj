@@ -1,0 +1,338 @@
+@{
+    ViewData["Title"] = "AI Assistant";
+}
+
+<div class="container mt-4 mb-5 mx-auto" style="max-width: 960px;">
+    <div class="card bg-dark text-light border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="card-header bg-gradient-dark border-bottom border-secondary p-4 p-md-5">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                    <i class="bi bi-robot fs-2"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold">AI Assistant</h2>
+                    <p class="text-secondary mb-0">Generate and confirm new products or phones before saving them.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="mb-4">
+                <label class="form-label text-secondary small text-uppercase fw-semibold" style="letter-spacing: 1px;">Choose entity</label>
+                <div class="btn-group w-100" role="group" aria-label="Choose entity type">
+                    <input type="radio" class="btn-check" name="entity-type" id="entity-product" value="product" autocomplete="off" checked>
+                    <label class="btn btn-outline-info py-3 fw-semibold" for="entity-product">
+                        <i class="bi bi-box-seam me-2"></i>Products
+                    </label>
+
+                    <input type="radio" class="btn-check" name="entity-type" id="entity-phone" value="phone" autocomplete="off">
+                    <label class="btn btn-outline-info py-3 fw-semibold" for="entity-phone">
+                        <i class="bi bi-phone me-2"></i>Phones
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="ai-input" class="form-label text-secondary small text-uppercase fw-semibold" style="letter-spacing: 1px;">Description</label>
+                <textarea id="ai-input" class="form-control bg-black text-light border-secondary focus-ring-info" rows="5" placeholder="e.g., iPhone 14 Pro Max 256GB, price 1200 euro, 15 in stock"></textarea>
+                <div class="form-text text-secondary mt-2" id="ai-example">For products, include name, description, price, and stock quantity.</div>
+            </div>
+
+            <div id="ai-status" class="alert d-none rounded-4 mb-4"></div>
+
+            <div class="d-flex flex-column flex-sm-row gap-3">
+                <button type="button" id="ai-parse-btn" class="btn btn-info rounded-pill px-5 py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center">
+                    <i class="bi bi-magic me-2 fs-5"></i>Generate Preview
+                </button>
+                <a href="~/" class="btn btn-outline-secondary rounded-pill px-5 py-2 fw-bold d-flex align-items-center justify-content-center">
+                    Cancel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="aiPreviewModal" tabindex="-1" aria-labelledby="aiPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-secondary rounded-4">
+            <div class="modal-header border-secondary">
+                <div>
+                    <h5 class="modal-title fw-bold" id="aiPreviewModalLabel">Confirm AI Entry</h5>
+                    <p class="text-secondary small mb-0">Review the generated data before saving.</p>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="preview-alert" class="alert d-none rounded-4"></div>
+                <div id="preview-fields" class="list-group list-group-flush mb-4"></div>
+
+                <div id="customer-selection" class="d-none border-top border-secondary pt-4">
+                    <h6 class="text-info fw-bold mb-3">
+                        <i class="bi bi-person-badge me-2"></i>Customer
+                    </h6>
+                    @await Html.PartialAsync("_AutocompleteDropdown", new MobilePhoneServiceAndSalesSystem.Models.AutocompleteSelectViewModel
+                    {
+                        InputName = "CustomerId",
+                        SelectedId = null,
+                        SelectedText = string.Empty,
+                        Label = "Customer",
+                        Placeholder = "Start typing a customer name",
+                        EndpointUrl = Url.Content("~/customers/search"),
+                        RequiredMessage = "Select a customer."
+                    })
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="ai-confirm-btn" class="btn btn-info rounded-pill px-4 fw-bold">
+                    <i class="bi bi-check-lg me-2"></i>Confirm Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const input = document.getElementById("ai-input");
+            const parseBtn = document.getElementById("ai-parse-btn");
+            const confirmBtn = document.getElementById("ai-confirm-btn");
+            const status = document.getElementById("ai-status");
+            const example = document.getElementById("ai-example");
+            const previewFields = document.getElementById("preview-fields");
+            const previewAlert = document.getElementById("preview-alert");
+            const customerSelection = document.getElementById("customer-selection");
+            const customerInput = customerSelection.querySelector(".autocomplete-input");
+            const customerIdInput = customerSelection.querySelector(".autocomplete-id");
+            const modal = new bootstrap.Modal(document.getElementById("aiPreviewModal"));
+
+            let currentPreview = null;
+
+            function selectedEntityType() {
+                return document.querySelector('input[name="entity-type"]:checked').value;
+            }
+
+            function showStatus(message, type) {
+                status.className = "alert rounded-4 mb-4 alert-" + type;
+                status.textContent = message;
+                status.classList.remove("d-none");
+            }
+
+            function clearStatus() {
+                status.classList.add("d-none");
+                status.textContent = "";
+            }
+
+            function showPreviewAlert(message, type) {
+                previewAlert.className = "alert rounded-4 alert-" + type;
+                previewAlert.textContent = message;
+                previewAlert.classList.remove("d-none");
+            }
+
+            function clearPreviewAlert() {
+                previewAlert.classList.add("d-none");
+                previewAlert.textContent = "";
+            }
+
+            function addPreviewRow(label, value) {
+                const row = document.createElement("div");
+                row.className = "list-group-item bg-transparent text-light border-secondary px-0 d-flex flex-column flex-md-row justify-content-between gap-2";
+
+                const labelEl = document.createElement("span");
+                labelEl.className = "text-secondary fw-semibold";
+                labelEl.textContent = label;
+
+                const valueEl = document.createElement("span");
+                valueEl.className = "text-md-end";
+                valueEl.textContent = value || "-";
+
+                row.append(labelEl, valueEl);
+                previewFields.appendChild(row);
+            }
+
+            function renderProductPreview(product) {
+                addPreviewRow("Name", product.name);
+                addPreviewRow("Description", product.description);
+                addPreviewRow("Current price", product.currentPrice);
+                addPreviewRow("Stock quantity", product.stockQuantity);
+                customerSelection.classList.add("d-none");
+                clearPreviewAlert();
+            }
+
+            function renderPhonePreview(phone) {
+                addPreviewRow("Brand", phone.brand);
+                addPreviewRow("Model", phone.model);
+                addPreviewRow("IMEI", phone.imei);
+                addPreviewRow("Year of manufacture", phone.yearOfManufacture);
+                addPreviewRow("Operating system", phone.operatingSystem);
+                addPreviewRow("Customer", phone.customerText || phone.customerSearchTerm || "Not selected");
+
+                customerSelection.classList.remove("d-none");
+                customerIdInput.value = phone.customerId || "";
+                customerInput.value = phone.customerText || phone.customerSearchTerm || "";
+
+                if (phone.customerId && phone.customerText) {
+                    clearPreviewAlert();
+                } else if (phone.explicitId) {
+                    showPreviewAlert("Customer ID " + phone.explicitId + " was not found. Select a customer before confirming.", "warning");
+                } else {
+                    showPreviewAlert("Select an existing customer before confirming this phone.", "warning");
+                }
+            }
+
+            function renderPreview(data) {
+                currentPreview = data;
+                previewFields.innerHTML = "";
+                clearPreviewAlert();
+
+                if (data.entityType === "product") {
+                    renderProductPreview(data.product);
+                } else {
+                    renderPhonePreview(data.phone);
+                }
+
+                modal.show();
+            }
+
+            function buildConfirmPayload() {
+                if (!currentPreview) {
+                    return null;
+                }
+
+                if (currentPreview.entityType === "product") {
+                    return {
+                        entityType: "product",
+                        product: currentPreview.product
+                    };
+                }
+
+                const phone = currentPreview.phone;
+                return {
+                    entityType: "phone",
+                    phone: {
+                        brand: phone.brand,
+                        model: phone.model,
+                        imei: phone.imei,
+                        yearOfManufacture: phone.yearOfManufacture,
+                        operatingSystem: phone.operatingSystem,
+                        customerId: parseInt(customerIdInput.value || "0", 10)
+                    }
+                };
+            }
+
+            async function parseInput() {
+                const description = input.value.trim();
+                if (!description) {
+                    showStatus("Please enter a description first.", "warning");
+                    return;
+                }
+
+                clearStatus();
+                parseBtn.disabled = true;
+                parseBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generating...';
+
+                try {
+                    const response = await fetch("/ai/parse", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            entityType: selectedEntityType(),
+                            input: description
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        showStatus(data.error || "Could not generate a preview.", "danger");
+                        return;
+                    }
+
+                    renderPreview(data);
+                } catch (error) {
+                    showStatus("Network error while generating preview.", "danger");
+                } finally {
+                    parseBtn.disabled = false;
+                    parseBtn.innerHTML = '<i class="bi bi-magic me-2 fs-5"></i>Generate Preview';
+                }
+            }
+
+            async function confirmPreview() {
+                const payload = buildConfirmPayload();
+                if (!payload) {
+                    return;
+                }
+
+                if (payload.entityType === "phone" && (!payload.phone.customerId || payload.phone.customerId <= 0)) {
+                    showPreviewAlert("Select an existing customer before confirming this phone.", "warning");
+                    return;
+                }
+
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+                try {
+                    const response = await fetch("/ai/confirm", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        showPreviewAlert(data.error || "Could not save the entry.", "danger");
+                        return;
+                    }
+
+                    window.location.href = data.redirectUrl;
+                } catch (error) {
+                    showPreviewAlert("Network error while saving.", "danger");
+                } finally {
+                    confirmBtn.disabled = false;
+                    confirmBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Confirm Add';
+                }
+            }
+
+            document.querySelectorAll('input[name="entity-type"]').forEach(function (radio) {
+                radio.addEventListener("change", function () {
+                    clearStatus();
+                    input.value = "";
+                    input.placeholder = selectedEntityType() === "product"
+                        ? "e.g., iPhone 14 Pro Max 256GB, price 1200 euro, 15 in stock"
+                        : "e.g., Samsung S23 for customer ID 5, IMEI 123456789012345, 2023, Android 13";
+                    example.textContent = selectedEntityType() === "product"
+                        ? "For products, include name, description, price, and stock quantity."
+                        : "For phones, include brand, model, IMEI, year, operating system, and customer.";
+                });
+            });
+
+            parseBtn.addEventListener("click", parseInput);
+            confirmBtn.addEventListener("click", confirmPreview);
+
+            input.addEventListener("keydown", function (event) {
+                if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+                    event.preventDefault();
+                    parseInput();
+                }
+            });
+        })();
+    </script>
+}
+
+<style>
+    .focus-ring-info:focus {
+        background-color: #0a0a0c !important;
+        border-color: var(--bs-info) !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25) !important;
+        color: white !important;
+    }
+
+    #ai-input::placeholder {
+        color: #cbd5e1;
+        opacity: 1;
+    }
+
+    .bg-gradient-dark {
+        background: linear-gradient(145deg, #1a1a20, #121215);
+    }
+</style>

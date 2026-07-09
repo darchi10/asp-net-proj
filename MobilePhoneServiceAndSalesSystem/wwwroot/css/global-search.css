@@ -140,3 +140,53 @@ kbd.search-kbd {
     margin-top: 8px;
     opacity: 0.85;
 }
+
+@media (max-width: 575px) {
+    #globalSearchModal .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .global-search-content {
+        border-radius: 12px;
+    }
+
+    .global-search-input-group {
+        padding: 2px 6px;
+    }
+
+    #global-search-input {
+        font-size: 1rem !important;
+    }
+
+    .global-search-results {
+        max-height: 60vh;
+    }
+
+    .global-search-item {
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 12px;
+    }
+
+    .global-search-item:hover,
+    .global-search-item.active {
+        padding-left: 8px;
+        transform: none;
+    }
+
+    .global-search-item-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+        flex: 0 0 34px;
+    }
+
+    .global-search-item-title,
+    .global-search-item-desc {
+        overflow-wrap: anywhere;
+    }
+
+    .global-search-item-badge {
+        display: none;
+    }
+}

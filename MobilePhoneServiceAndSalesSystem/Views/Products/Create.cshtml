@@ -18,26 +18,6 @@
             </div>
         </div>
         <div class="card-body p-4 p-md-5">
-            <!-- AI Assistant Panel -->
-            <div class="alert alert-info bg-info bg-opacity-10 border-info rounded-4 mb-4">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="text-info fs-3">
-                        <i class="bi bi-robot"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold mb-2 text-info">AI Assistant</h6>
-                        <p class="small mb-3 text-light">Describe the product in natural language, and AI will fill the form for you.</p>
-                        <div class="input-group mb-2">
-                            <input type="text" id="ai-input" class="form-control bg-black text-light border-secondary" placeholder="e.g., iPhone 14 Pro Max 256GB, price 1200 euro, 15 in stock" />
-                            <button type="button" id="ai-parse-btn" class="btn btn-info">
-                                <i class="bi bi-magic me-1"></i> Parse
-                            </button>
-                        </div>
-                        <div id="ai-status" class="small"></div>
-                    </div>
-                </div>
-            </div>
-
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger text-light rounded-3 mb-4"></div>
 
@@ -92,54 +72,6 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        document.getElementById('ai-parse-btn').addEventListener('click', async function() {
-            const input = document.getElementById('ai-input').value.trim();
-            const status = document.getElementById('ai-status');
-            const btn = this;
-
-            if (!input) {
-                status.innerHTML = '<span class="text-warning">Please enter a description</span>';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
-            status.innerHTML = '<span class="text-info">AI is parsing your input...</span>';
-
-            try {
-                const response = await fetch('/products/ai-parse', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ input: input })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    document.querySelector('[name="Name"]').value = data.name || '';
-                    document.querySelector('[name="Description"]').value = data.description || '';
-                    document.querySelector('[name="CurrentPrice"]').value = data.currentPrice || '';
-                    document.querySelector('[name="StockQuantity"]').value = data.stockQuantity || '';
-                    status.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i> Form filled successfully!</span>';
-                } else {
-                    const error = await response.json();
-                    status.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i> ' + (error.error || 'Failed to parse') + '</span>';
-                }
-            } catch (err) {
-                status.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-circle me-1"></i> Network error</span>';
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="bi bi-magic me-1"></i> Parse';
-            }
-        });
-
-        document.getElementById('ai-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                document.getElementById('ai-parse-btn').click();
-            }
-        });
-    </script>
 }
 
 <style>

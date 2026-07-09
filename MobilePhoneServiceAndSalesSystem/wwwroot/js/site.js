@@ -290,14 +290,6 @@
 // =================================
 
 (function() {
-	// Prevent double-tap zoom on buttons and links (iOS Safari)
-	document.addEventListener('touchend', function(e) {
-		if (e.target.matches('button, a, .btn, .nav-link')) {
-			e.preventDefault();
-			e.target.click();
-		}
-	}, { passive: false });
-
 	// Auto-collapse navbar on mobile after link click
 	const navbarToggler = document.querySelector('.navbar-toggler');
 	const navbarCollapse = document.querySelector('.navbar-collapse');
@@ -305,7 +297,10 @@
 	if (navbarToggler && navbarCollapse) {
 		document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
 			link.addEventListener('click', function() {
-				if (window.innerWidth < 576 && navbarCollapse.classList.contains('show')) {
+				const opensDropdown = this.classList.contains('dropdown-toggle') || this.getAttribute('data-bs-toggle') === 'dropdown';
+				const isPlaceholderLink = this.getAttribute('href') === '#';
+
+				if (!opensDropdown && !isPlaceholderLink && window.innerWidth < 576 && navbarCollapse.classList.contains('show')) {
 					navbarToggler.click();
 				}
 			});

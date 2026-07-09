@@ -252,9 +252,21 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpGet]
         [Route("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Customer")]
         public IActionResult Create()
         {
+            if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue)
+                {
+                    return Forbid();
+                }
+                PopulateCustomerSelection(customerId.Value);
+                PopulateProducts();
+                return View(new Order { CustomerId = customerId.Value });
+            }
+
             PopulateCustomerSelection(null);
             PopulateProducts();
             return View();
@@ -262,15 +274,27 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
         [HttpPost]
         [Route("create")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Customer")]
         public IActionResult Create(Order order)
         {
+            if (User.IsInRole("Customer"))
+            {
+                var customerId = EnsureCustomerLink();
+                if (!customerId.HasValue)
+                {
+                    return Forbid();
+                }
+                order.CustomerId = customerId.Value; // Force link to logged-in user
+            }
+
             var orderItems = NormalizeOrderItems(order.OrderItems);
 
             if (!orderItems.Any())
             {
                 ModelState.AddModelError("OrderItems", "Add at least one product.");
             }
+
+            ModelState.Remove("Customer");
 
             if (!ModelState.IsValid)
             {
@@ -291,6 +315,16 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             order.OrderDate = DateTime.Now;
             order.TotalAmount = totalAmount;
             order.OrderItems = orderItems;
+
+            // Reduce product stock quantity
+            foreach (var item in orderItems)
+            {
+                var product = _dbContext.Products.Find(item.ProductId);
+                if (product != null)
+                {
+                    product.StockQuantity -= item.Quantity;
+                }
+            }
 
             _dbContext.Orders.Add(order);
             _dbContext.SaveChanges();
@@ -345,8 +379,28 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 ModelState.AddModelError("OrderItems", "Add at least one product.");
             }
 
+            // Temporarily revert old order items back to product stock for validation
+            foreach (var oldItem in existingOrder.OrderItems)
+            {
+                var product = _dbContext.Products.Find(oldItem.ProductId);
+                if (product != null)
+                {
+                    product.StockQuantity += oldItem.Quantity;
+                }
+            }
+
             if (!ModelState.IsValid)
             {
+                // Restore stock back since we are returning the view
+                foreach (var oldItem in existingOrder.OrderItems)
+                {
+                    var product = _dbContext.Products.Find(oldItem.ProductId);
+                    if (product != null)
+                    {
+                        product.StockQuantity -= oldItem.Quantity;
+                    }
+                }
+
                 PopulateCustomerSelection(order.CustomerId);
                 PopulateProducts();
                 order.OrderItems = orderItems;
@@ -356,11 +410,31 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
             if (!TryApplyProductPricing(orderItems, out var totalAmount))
             {
+                // Restore stock back since we are returning the view
+                foreach (var oldItem in existingOrder.OrderItems)
+                {
+                    var product = _dbContext.Products.Find(oldItem.ProductId);
+                    if (product != null)
+                    {
+                        product.StockQuantity -= oldItem.Quantity;
+                    }
+                }
+
                 PopulateCustomerSelection(order.CustomerId);
                 PopulateProducts();
                 order.OrderItems = orderItems;
                 order.OrderDate = existingOrder.OrderDate;
                 return View(order);
+            }
+
+            // Apply new stock reduction
+            foreach (var newItem in orderItems)
+            {
+                var product = _dbContext.Products.Find(newItem.ProductId);
+                if (product != null)
+                {
+                    product.StockQuantity -= newItem.Quantity;
+                }
             }
 
             existingOrder.CustomerId = order.CustomerId;
@@ -417,6 +491,16 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             {
                 TempData["Error"] = "Choose a delete option for records with related data.";
                 return RedirectToAction(nameof(Index));
+            }
+
+            // Revert stock back for deleted order items
+            foreach (var item in order.OrderItems)
+            {
+                var product = _dbContext.Products.Find(item.ProductId);
+                if (product != null)
+                {
+                    product.StockQuantity += item.Quantity;
+                }
             }
 
             if (string.Equals(deleteMode, "soft", System.StringComparison.OrdinalIgnoreCase))

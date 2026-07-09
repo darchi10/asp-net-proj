@@ -506,13 +506,18 @@ body {
     margin: 0.125rem 0;
   }
 
-  /* Stack action buttons vertically */
-  .d-flex.justify-content-between {
+  /* Stack top-level page controls vertically without changing card internals. */
+  .page-header,
+  main > .d-flex.justify-content-between,
+  .card-header.d-flex.justify-content-between {
     flex-direction: column;
+    align-items: stretch !important;
     gap: 1rem;
   }
 
-  .d-flex.justify-content-between > * {
+  .page-header > *,
+  main > .d-flex.justify-content-between > *,
+  .card-header.d-flex.justify-content-between > * {
     width: 100%;
   }
 
@@ -557,6 +562,16 @@ body {
 
   .auth-title {
     font-size: 1.35rem;
+  }
+
+  .auth-links {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-file-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   /* Card grid responsive */

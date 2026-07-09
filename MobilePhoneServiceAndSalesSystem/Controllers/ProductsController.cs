@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
-using MobilePhoneServiceAndSalesSystem.Models.DTOs;
 using System.Linq;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
@@ -12,14 +11,10 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
     public class ProductsController : Controller
     {
         private readonly AppDbContext _dbContext;
-        private readonly Infrastructure.AI.GroqAiService _aiService;
-        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(AppDbContext dbContext, Infrastructure.AI.GroqAiService aiService, ILogger<ProductsController> logger)
+        public ProductsController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
-            _aiService = aiService;
-            _logger = logger;
         }
 
         [Route("")]
@@ -71,38 +66,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         public IActionResult Create()
         {
             return View();
-        }
-
-        [HttpPost]
-        [Route("ai-parse")]
-        [Authorize(Roles = "Admin,Worker")]
-        public async Task<IActionResult> AiParse([FromBody] AiParseRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Input))
-            {
-                return BadRequest(new { error = "Input cannot be empty" });
-            }
-
-            var systemPrompt = @"You are a product data parser. Extract product information from user input and return ONLY valid JSON with these exact fields:
-{
-  ""name"": ""product name (max 150 chars)"",
-  ""description"": ""product description (max 1000 chars)"",
-  ""currentPrice"": 0.00,
-  ""stockQuantity"": 0
-}
-Rules:
-- currentPrice must be between 0.01 and 100000
-- stockQuantity must be between 0 and 100000
-- Return ONLY the JSON object, no explanations";
-
-            var result = await _aiService.ParseToEntityAsync<ProductDto>(request.Input, systemPrompt);
-            
-            if (result == null)
-            {
-                return BadRequest(new { error = "Could not parse input. Try being more specific." });
-            }
-
-            return Ok(result);
         }
 
         [HttpPost]

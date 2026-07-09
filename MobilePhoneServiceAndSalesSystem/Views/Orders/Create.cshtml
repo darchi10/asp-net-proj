@@ -31,16 +31,27 @@
                 <h5 class="text-primary mb-3 fs-6 text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-person-badge me-2"></i>Customer</h5>
                 <div class="row g-3 mb-4 border-bottom border-secondary pb-4">
                     <div class="col-12">
-                        @await Html.PartialAsync("_AutocompleteDropdown", new MobilePhoneServiceAndSalesSystem.Models.AutocompleteSelectViewModel
+                        @if (User.IsInRole("Customer"))
                         {
-                            InputName = "CustomerId",
-                            SelectedId = selectedCustomerId,
-                            SelectedText = selectedCustomerText,
-                            Label = "Customer",
-                            Placeholder = "Start typing a customer name",
-                            EndpointUrl = Url.Content("~/customers/search"),
-                            RequiredMessage = "Select a customer."
-                        })
+                            <input type="hidden" name="CustomerId" value="@selectedCustomerId" />
+                            <div class="form-group mb-0">
+                                <label class="text-secondary small d-block mb-1">Customer</label>
+                                <input class="form-control bg-black text-light border-secondary" style="opacity: 0.7;" value="@selectedCustomerText" readonly />
+                            </div>
+                        }
+                        else
+                        {
+                            @await Html.PartialAsync("_AutocompleteDropdown", new MobilePhoneServiceAndSalesSystem.Models.AutocompleteSelectViewModel
+                            {
+                                InputName = "CustomerId",
+                                SelectedId = selectedCustomerId,
+                                SelectedText = selectedCustomerText,
+                                Label = "Customer",
+                                Placeholder = "Start typing a customer name",
+                                EndpointUrl = Url.Content("~/customers/search"),
+                                RequiredMessage = "Select a customer."
+                            })
+                        }
                     </div>
                 </div>
 

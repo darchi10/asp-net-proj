@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
-using MobilePhoneServiceAndSalesSystem.Models.DTOs;
 using System.Linq;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
@@ -13,14 +12,10 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
     public class PhonesController : Controller
     {
         private readonly AppDbContext _dbContext;
-        private readonly Infrastructure.AI.GroqAiService _aiService;
-        private readonly ILogger<PhonesController> _logger;
 
-        public PhonesController(AppDbContext dbContext, Infrastructure.AI.GroqAiService aiService, ILogger<PhonesController> logger)
+        public PhonesController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
-            _aiService = aiService;
-            _logger = logger;
         }
 
         [Route("")]
@@ -74,85 +69,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         {
             PopulateCustomerSelection(null);
             return View();
-        }
-
-        [HttpPost]
-        [Route("ai-parse")]
-        public async Task<IActionResult> AiParse([FromBody] AiParseRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.Input))
-            {
-                return BadRequest(new { error = "Input cannot be empty" });
-            }
-
-            var systemPrompt = @"You are a phone data parser. Extract phone information from user input and return ONLY valid JSON with these exact fields:
-{
-  ""brand"": ""phone brand (max 100 chars)"",
-  ""model"": ""phone model (max 100 chars)"",
-  ""imei"": ""IMEI number (15 digits)"",
-  ""yearOfManufacture"": 2020,
-  ""operatingSystem"": ""OS name (max 100 chars)"",
-  ""customerName"": ""customer full name if mentioned"",
-  ""customerId"": null or integer
-}
-Rules:
-- yearOfManufacture must be between 1990 and 2100
-- imei should be 15 digits, generate random if not provided
-- customerName extract from context (e.g., 'phone belongs to John Doe', 'owner: Jane Smith')
-- customerId extract if explicitly mentioned (e.g., 'customer ID 5', 'customerid: 123', 'ID #42')
-- PRIORITY: If customerId is provided, use it over customerName
-- Return ONLY the JSON object, no explanations";
-
-            var result = await _aiService.ParseToEntityAsync<PhoneAiDto>(request.Input, systemPrompt);
-            
-            if (result == null)
-            {
-                return BadRequest(new { error = "Could not parse input. Try being more specific." });
-            }
-
-            // Prioritet: Ako je CustomerId eksplicitno naveden, koristi ga
-            int? customerId = null;
-            string? customerText = null;
-            
-            if (result.CustomerId.HasValue && result.CustomerId.Value > 0)
-            {
-                // ID eksplicitno naveden - provjeri postoji li
-                var customerById = _dbContext.Customers
-                    .Where(c => !c.IsDeleted && c.Id == result.CustomerId.Value)
-                    .FirstOrDefault();
-                
-                if (customerById != null)
-                {
-                    customerId = customerById.Id;
-                    customerText = $"{customerById.FirstName} {customerById.LastName}";
-                }
-            }
-            else if (!string.IsNullOrWhiteSpace(result.CustomerName))
-            {
-                // ID nije naveden, traži po imenu
-                var customerByName = _dbContext.Customers
-                    .Where(c => !c.IsDeleted)
-                    .FirstOrDefault(c => (c.FirstName + " " + c.LastName).Contains(result.CustomerName));
-                
-                if (customerByName != null)
-                {
-                    customerId = customerByName.Id;
-                    customerText = $"{customerByName.FirstName} {customerByName.LastName}";
-                }
-            }
-
-            return Ok(new
-            {
-                result.Brand,
-                result.Model,
-                result.Imei,
-                result.YearOfManufacture,
-                result.OperatingSystem,
-                CustomerId = customerId,
-                CustomerText = customerText,
-                CustomerSearchTerm = result.CustomerName,
-                ExplicitId = result.CustomerId
-            });
         }
 
         [HttpPost]

@@ -19,7 +19,7 @@
         </div>
         <div class="card-body p-4 p-md-5">
             <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-danger bg-opacity-10 border-danger text-light rounded-3 mb-4"></div>
+                <div asp-validation-summary="All" class="alert alert-danger bg-danger bg-opacity-10 border-danger text-light rounded-3 mb-4"></div>
 
                 <h5 class="text-primary mb-3 fs-6 text-uppercase" style="letter-spacing: 1px;"><i class="bi bi-phone me-2"></i>Device</h5>
                 <div class="row g-3 mb-4 border-bottom border-secondary pb-4">
@@ -69,13 +69,15 @@
                         })
                     </div>
                     <div class="col-md-4">
-                        @await Html.PartialAsync("_DateTimePicker", new MobilePhoneServiceAndSalesSystem.Models.DateTimePickerViewModel
-                        {
-                            PropertyName = "CompletedDate",
-                            Label = "Completed Date",
-                            Value = Model?.CompletedDate,
-                            IncludeTime = true
-                        })
+                        <div id="repair-completed-date-field">
+                            @await Html.PartialAsync("_DateTimePicker", new MobilePhoneServiceAndSalesSystem.Models.DateTimePickerViewModel
+                            {
+                                PropertyName = "CompletedDate",
+                                Label = "Completed Date",
+                                Value = Model?.CompletedDate,
+                                IncludeTime = true
+                            })
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
@@ -109,9 +111,55 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        (function () {
+            const status = document.getElementById("Status");
+            const received = document.getElementById("ReceivedDate");
+            const receivedPicker = document.getElementById("ReceivedDate_picker");
+            const completed = document.getElementById("CompletedDate");
+            const completedPicker = document.getElementById("CompletedDate_picker");
+            const completedField = document.getElementById("repair-completed-date-field");
+
+            if (!status || !received || !receivedPicker || !completed || !completedPicker || !completedField) return;
+
+            if (receivedPicker._flatpickr) {
+                receivedPicker._flatpickr.set("maxDate", new Date());
+            }
+
+            function refreshCompletedDate() {
+                const needsCompletedDate = ["2", "3", "Completed", "Delivered"].includes(status.value);
+                const picker = completedPicker._flatpickr;
+
+                completedPicker.disabled = !needsCompletedDate;
+                completedField.classList.toggle("opacity-50", !needsCompletedDate);
+
+                if (picker) {
+                    picker.set("minDate", received.value || null);
+                    picker.set("maxDate", new Date());
+                    picker.set("clickOpens", needsCompletedDate);
+                }
+
+                if (!needsCompletedDate) {
+                    if (picker) picker.clear();
+                    else {
+                        completedPicker.value = "";
+                        completed.value = "";
+                    }
+                }
+            }
+
+            status.addEventListener("change", refreshCompletedDate);
+            received.addEventListener("change", refreshCompletedDate);
+            refreshCompletedDate();
+        })();
+    </script>
 }
 
 <style>
+    .validation-summary-valid {
+        display: none;
+    }
+
     .focus-ring-primary:focus {
         background-color: #0a0a0c !important;
         border-color: var(--bs-primary) !important;

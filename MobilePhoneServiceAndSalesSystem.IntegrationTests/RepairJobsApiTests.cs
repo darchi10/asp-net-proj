@@ -325,6 +325,150 @@ namespace MobilePhoneServiceAndSalesSystem.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
+        [Fact]
+        public async Task Post_ReturnsBadRequest_WhenCompletedDateIsBeforeReceivedDate()
+        {
+            using var client = _factory.CreateClient();
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ResetDatabase(db);
+            var (phone, technician) = SeedRepairDependencies(db);
+            var now = DateTime.Now;
+
+            var dto = new RepairJobDto
+            {
+                Description = "Screen replacement",
+                Status = RepairStatus.Completed,
+                ReceivedDate = now.AddDays(-1),
+                CompletedDate = now.AddDays(-2),
+                LaborCost = 50m,
+                PhoneId = phone.Id,
+                TechnicianId = technician.Id
+            };
+
+            var response = await client.PostAsJsonAsync("/api/repair-jobs", dto);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            db.RepairJobs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task Post_ReturnsBadRequest_WhenActiveRepairHasCompletedDate()
+        {
+            using var client = _factory.CreateClient();
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ResetDatabase(db);
+            var (phone, technician) = SeedRepairDependencies(db);
+            var now = DateTime.Now;
+
+            var dto = new RepairJobDto
+            {
+                Description = "Battery replacement",
+                Status = RepairStatus.InProgress,
+                ReceivedDate = now.AddDays(-2),
+                CompletedDate = now.AddDays(-1),
+                LaborCost = 30m,
+                PhoneId = phone.Id,
+                TechnicianId = technician.Id
+            };
+
+            var response = await client.PostAsJsonAsync("/api/repair-jobs", dto);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            db.RepairJobs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task Post_ReturnsBadRequest_WhenCompletedRepairHasNoCompletedDate()
+        {
+            using var client = _factory.CreateClient();
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ResetDatabase(db);
+            var (phone, technician) = SeedRepairDependencies(db);
+
+            var dto = new RepairJobDto
+            {
+                Description = "Charging port repair",
+                Status = RepairStatus.Completed,
+                ReceivedDate = DateTime.Now.AddDays(-2),
+                CompletedDate = null,
+                LaborCost = 45m,
+                PhoneId = phone.Id,
+                TechnicianId = technician.Id
+            };
+
+            var response = await client.PostAsJsonAsync("/api/repair-jobs", dto);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            db.RepairJobs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task Post_ReturnsBadRequest_WhenReceivedDateIsInFuture()
+        {
+            using var client = _factory.CreateClient();
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ResetDatabase(db);
+            var (phone, technician) = SeedRepairDependencies(db);
+
+            var dto = new RepairJobDto
+            {
+                Description = "Camera module repair",
+                Status = RepairStatus.Pending,
+                ReceivedDate = DateTime.Now.AddDays(1),
+                CompletedDate = null,
+                LaborCost = 40m,
+                PhoneId = phone.Id,
+                TechnicianId = technician.Id
+            };
+
+            var response = await client.PostAsJsonAsync("/api/repair-jobs", dto);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            db.RepairJobs.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task Put_ReturnsBadRequest_WhenStatusTransitionSkipsWorkflow()
+        {
+            using var client = _factory.CreateClient();
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            ResetDatabase(db);
+            var (phone, technician) = SeedRepairDependencies(db);
+            var job = new RepairJob
+            {
+                Description = "Display diagnostics",
+                Status = RepairStatus.Pending,
+                ReceivedDate = DateTime.Now.AddDays(-2),
+                LaborCost = 25m,
+                PhoneId = phone.Id,
+                TechnicianId = technician.Id
+            };
+            db.RepairJobs.Add(job);
+            db.SaveChanges();
+
+            var dto = new RepairJobDto
+            {
+                Description = job.Description,
+                Status = RepairStatus.Delivered,
+                ReceivedDate = job.ReceivedDate,
+                CompletedDate = DateTime.Now.AddDays(-1),
+                LaborCost = job.LaborCost,
+                PhoneId = phone.Id,
+                TechnicianId = technician.Id
+            };
+
+            var response = await client.PutAsJsonAsync($"/api/repair-jobs/{job.Id}", dto);
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            db.ChangeTracker.Clear();
+            db.RepairJobs.Single().Status.Should().Be(RepairStatus.Pending);
+        }
+
         private static Customer CreateCustomer()
         {
             return new Customer
@@ -335,6 +479,21 @@ namespace MobilePhoneServiceAndSalesSystem.IntegrationTests
                 PhoneNumber = "+38591111222",
                 Address = "Example 12, Zagreb"
             };
+        }
+
+        private static (Phone Phone, Technician Technician) SeedRepairDependencies(AppDbContext db)
+        {
+            var customer = CreateCustomer();
+            db.Customers.Add(customer);
+
+            var phone = CreatePhone(customer.Id);
+            db.Phones.Add(phone);
+
+            var technician = CreateTechnician();
+            db.Technicians.Add(technician);
+            db.SaveChanges();
+
+            return (phone, technician);
         }
 
         private static Phone CreatePhone(int customerId)

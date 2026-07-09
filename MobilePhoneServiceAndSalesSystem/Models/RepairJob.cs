@@ -13,6 +13,7 @@ namespace MobilePhoneServiceAndSalesSystem.Models
         [Required]
         [StringLength(2000, MinimumLength = 5)]
         public string Description { get; set; } = string.Empty;
+        [EnumDataType(typeof(RepairStatus))]
         public RepairStatus Status { get; set; }
         [Required]
         public DateTime ReceivedDate { get; set; }

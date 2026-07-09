@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
 using MobilePhoneServiceAndSalesSystem.Models.DTOs;
+using MobilePhoneServiceAndSalesSystem.Models.Validation;
 
 namespace MobilePhoneServiceAndSalesSystem.Controllers
 {
@@ -70,6 +71,13 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [HttpPost]
         public ActionResult<RepairJobDetailsDto> Post([FromBody] RepairJobDto dto)
         {
+            var lifecycleErrors = ToValidationErrors(
+                RepairJobLifecycleRules.ValidateSnapshot(dto.Status, dto.ReceivedDate, dto.CompletedDate, DateTime.Now));
+            if (lifecycleErrors.Count > 0)
+            {
+                return ValidationProblem(new ValidationProblemDetails(lifecycleErrors));
+            }
+
             if (!PhoneExists(dto.PhoneId))
             {
                 return BadRequest("Phone does not exist.");
@@ -80,7 +88,10 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return BadRequest("Technician does not exist.");
             }
 
-            var usedParts = GetUsedParts(dto.UsedPartIds);
+            if (!TryGetUsedParts(dto.UsedPartIds, out var usedParts))
+            {
+                return BadRequest("One or more selected spare parts are unavailable.");
+            }
 
             var repairJob = new RepairJob();
             repairJob.ApplyDto(dto);
@@ -117,7 +128,22 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 return NotFound();
             }
 
-            var usedParts = GetUsedParts(dto.UsedPartIds);
+            var lifecycleErrors = ToValidationErrors(
+                RepairJobLifecycleRules.ValidateUpdate(
+                    repairJob.Status,
+                    dto.Status,
+                    dto.ReceivedDate,
+                    dto.CompletedDate,
+                    DateTime.Now));
+            if (lifecycleErrors.Count > 0)
+            {
+                return ValidationProblem(new ValidationProblemDetails(lifecycleErrors));
+            }
+
+            if (!TryGetUsedParts(dto.UsedPartIds, out var usedParts))
+            {
+                return BadRequest("One or more selected spare parts are unavailable.");
+            }
 
             repairJob.ApplyDto(dto);
             repairJob.UsedParts = usedParts;
@@ -154,17 +180,30 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             return _dbContext.Technicians.Any(t => t.Id == technicianId && !t.IsDeleted);
         }
 
-        private List<SparePart> GetUsedParts(IEnumerable<int>? usedPartIds)
+        private bool TryGetUsedParts(IEnumerable<int>? usedPartIds, out List<SparePart> usedParts)
         {
             var ids = usedPartIds?.Distinct().ToList() ?? new List<int>();
             if (!ids.Any())
             {
-                return new List<SparePart>();
+                usedParts = new List<SparePart>();
+                return true;
             }
 
-            return _dbContext.SpareParts
+            usedParts = _dbContext.SpareParts
                 .Where(sp => ids.Contains(sp.Id) && !sp.IsDeleted)
                 .ToList();
+
+            return usedParts.Count == ids.Count;
+        }
+
+        private static Dictionary<string, string[]> ToValidationErrors(
+            IReadOnlyList<RepairJobValidationError> validationErrors)
+        {
+            return validationErrors
+                .GroupBy(error => error.Key)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(error => error.Message).ToArray());
         }
     }
 }

@@ -3,12 +3,12 @@ name: Deploy to Azure
 on:
   push:
     branches:
-      - main          # deploy se trigerira pri pushanju na main
-  workflow_dispatch:  # možeš i ručno pokrenuti iz GitHub UI
+      - main
+  workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: mobile-service-sale-app    # ← PROMIJENI ako je tvoj App Service na Azureu drugačijeg naziva
-  DOTNET_VERSION: '10.0.x'                  # ← Postavljeno na 10.0.x jer tvoj projekt koristi .NET 10.0
+  AZURE_WEBAPP_NAME: mobile-service-sale-app
+  DOTNET_VERSION: '10.0.x'
 
 jobs:
   build-and-deploy:

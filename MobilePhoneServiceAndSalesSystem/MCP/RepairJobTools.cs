@@ -70,7 +70,7 @@ public sealed class RepairJobTools
                 }).ToList(),
                 TotalPartsCost = repairJob.UsedParts.Sum(sp => sp.Price),
                 TotalCost = repairJob.LaborCost + repairJob.UsedParts.Sum(sp => sp.Price),
-                IsCompleted = repairJob.Status == RepairStatus.Completed,
+                IsCompleted = repairJob.Status is RepairStatus.Completed or RepairStatus.Delivered,
                 DaysInProgress = repairJob.CompletedDate.HasValue
                     ? (repairJob.CompletedDate.Value - repairJob.ReceivedDate).Days
                     : (DateTime.Now - repairJob.ReceivedDate).Days
@@ -230,15 +230,19 @@ public sealed class RepairJobTools
                 rj => !rj.IsDeleted && rj.Status == RepairStatus.InProgress, ct);
             var completedJobs = await _dbContext.RepairJobs.CountAsync(
                 rj => !rj.IsDeleted && rj.Status == RepairStatus.Completed, ct);
+            var deliveredJobs = await _dbContext.RepairJobs.CountAsync(
+                rj => !rj.IsDeleted && rj.Status == RepairStatus.Delivered, ct);
             var cancelledJobs = await _dbContext.RepairJobs.CountAsync(
                 rj => !rj.IsDeleted && rj.Status == RepairStatus.Cancelled, ct);
 
             var averageLaborCost = await _dbContext.RepairJobs
-                .Where(rj => !rj.IsDeleted && rj.Status == RepairStatus.Completed)
+                .Where(rj => !rj.IsDeleted && (rj.Status == RepairStatus.Completed || rj.Status == RepairStatus.Delivered))
                 .AverageAsync(rj => (double?)rj.LaborCost, ct) ?? 0;
 
             var averageDuration = await _dbContext.RepairJobs
-                .Where(rj => !rj.IsDeleted && rj.Status == RepairStatus.Completed && rj.CompletedDate.HasValue)
+                .Where(rj => !rj.IsDeleted
+                    && (rj.Status == RepairStatus.Completed || rj.Status == RepairStatus.Delivered)
+                    && rj.CompletedDate.HasValue)
                 .AverageAsync(rj => (rj.CompletedDate!.Value - rj.ReceivedDate).Days, ct);
 
             _logger.LogInformation("MCP: GetRepairJobStatistics executed");
@@ -251,6 +255,7 @@ public sealed class RepairJobTools
                     pending = pendingJobs,
                     inProgress = inProgressJobs,
                     completed = completedJobs,
+                    delivered = deliveredJobs,
                     cancelled = cancelledJobs
                 },
                 completedJobsStats = new

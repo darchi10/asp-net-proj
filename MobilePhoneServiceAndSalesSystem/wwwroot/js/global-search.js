@@ -17,7 +17,6 @@
         searchInput = document.getElementById("global-search-input");
         searchResults = document.getElementById("global-search-results");
 
-        // Toggle modal on navbar button click
         if (searchBtn) {
             searchBtn.addEventListener("click", function (e) {
                 e.preventDefault();
@@ -25,7 +24,6 @@
             });
         }
 
-        // Toggle modal on keyboard shortcut (Ctrl+K or Cmd+K)
         document.addEventListener("keydown", function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
                 e.preventDefault();
@@ -33,13 +31,11 @@
             }
         });
 
-        // Autofocus input and load initial results when modal is shown
         modalEl.addEventListener("shown.bs.modal", function () {
             searchInput.focus();
             loadResults(""); // Load default navigation shortcuts
         });
 
-        // Reset state on modal close
         modalEl.addEventListener("hidden.bs.modal", function () {
             searchInput.value = "";
             searchResults.innerHTML = "";
@@ -47,7 +43,6 @@
             currentResults = [];
         });
 
-        // Input listener with debounce
         searchInput.addEventListener("input", function () {
             clearTimeout(debounceTimer);
             const query = searchInput.value.trim();
@@ -57,7 +52,6 @@
             }, 200); // 200ms debounce
         });
 
-        // Keyboard navigation for search results
         searchInput.addEventListener("keydown", function (e) {
             const items = searchResults.querySelectorAll(".global-search-item");
             if (items.length === 0) return;
@@ -81,7 +75,6 @@
         });
     });
 
-    // Load search results from API
     function loadResults(query) {
         searchResults.innerHTML = `
             <div class="text-center py-4 opacity-50">
@@ -111,7 +104,6 @@
             });
     }
 
-    // Render results grouped by category
     function renderResults(results) {
         if (!results || results.length === 0) {
             searchResults.innerHTML = `
@@ -123,7 +115,6 @@
             return;
         }
 
-        // Group by category
         const groups = {};
         results.forEach(item => {
             if (!groups[item.category]) {
@@ -134,7 +125,6 @@
 
         let html = "";
         
-        // Sort categories to put "Navigation" first
         const categories = Object.keys(groups).sort((a, b) => {
             if (a === "Navigation") return -1;
             if (b === "Navigation") return 1;
@@ -162,7 +152,6 @@
         searchResults.innerHTML = html;
     }
 
-    // Update active visual item during keyboard navigation
     function updateActiveItem(items) {
         items.forEach((item, index) => {
             if (index === activeIndex) {
@@ -174,7 +163,6 @@
         });
     }
 
-    // Escape HTML to prevent XSS
     function escapeHtml(text) {
         if (!text) return "";
         const map = {

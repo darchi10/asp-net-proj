@@ -35,12 +35,10 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             var isCustomer = User.IsInRole("Customer");
             var isAuthenticated = User.Identity?.IsAuthenticated == true;
 
-            // 1. MENU NAVIGATION ITEMS (CLIENT/ROLES FILTER)
             var menuItems = GetAvailableMenuItems(isAdmin, isWorker, isCustomer, isAuthenticated);
 
             if (!string.IsNullOrWhiteSpace(query))
             {
-                // Search by title or description of the menu items
                 var filteredMenus = menuItems.Where(m =>
                     m.Title.ToLower().Contains(query) ||
                     m.Description.ToLower().Contains(query) ||
@@ -49,11 +47,8 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
 
                 results.AddRange(filteredMenus);
 
-                // 2. DATABASE ENTITIES SEARCH (authorized based on roles)
-                // If query is very short (less than 2 chars), skip DB query for performance
                 if (query.Length >= 2)
                 {
-                    // A. PRODUCTS (Available to everyone)
                     var products = await _dbContext.Products
                         .Where(p => !p.IsDeleted && (p.Name.ToLower().Contains(query) || p.Description.ToLower().Contains(query)))
                         .Take(5)
@@ -68,7 +63,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                         .ToListAsync();
                     results.AddRange(products);
 
-                    // B. CUSTOMERS (Admin only)
                     if (isAdmin)
                     {
                         var customers = await _dbContext.Customers
@@ -90,7 +84,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                         results.AddRange(customers);
                     }
 
-                    // C. PHONES (Admin only)
                     if (isAdmin)
                     {
                         var phones = await _dbContext.Phones
@@ -112,7 +105,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                         results.AddRange(phones);
                     }
 
-                    // D. SPARE PARTS (Admin, Worker)
                     if (isAdmin || isWorker)
                     {
                         var spareParts = await _dbContext.SpareParts
@@ -130,7 +122,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                         results.AddRange(spareParts);
                     }
 
-                    // E. REPAIRS / REPAIR JOBS (Admin, Worker, Customer)
                     if (isAdmin || isWorker || isCustomer)
                     {
                         var repairQuery = _dbContext.RepairJobs
@@ -150,7 +141,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                             }
                         }
 
-                        // Search by ID or Description
                         int.TryParse(query, out int searchId);
                         repairQuery = repairQuery.Where(r =>
                             r.Id == searchId ||
@@ -172,7 +162,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                         results.AddRange(repairs);
                     }
 
-                    // F. ORDERS (Admin, Customer)
                     if (isAdmin || isCustomer)
                     {
                         var ordersQuery = _dbContext.Orders
@@ -213,7 +202,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                         results.AddRange(orders);
                     }
 
-                    // G. TECHNICIANS (Admin only)
                     if (isAdmin)
                     {
                         var technicians = await _dbContext.Technicians
@@ -237,7 +225,6 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             }
             else
             {
-                // If no query, return top menu/navigation shortcuts (Home, Store, Tracker)
                 results.AddRange(menuItems.Take(4));
             }
 
@@ -248,19 +235,16 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         {
             var menuItems = new List<SearchResultDto>();
 
-            // Available to all (Anonymous + Authenticated)
             menuItems.Add(new SearchResultDto { Title = "Home Page", Description = "Go back to the homepage and dashboard", Category = "Navigation", Url = "/", Icon = "bi-house" });
             menuItems.Add(new SearchResultDto { Title = "Store / Products", Description = "Browse available retail products and spare parts", Category = "Navigation", Url = "/products", Icon = "bi-shop" });
             menuItems.Add(new SearchResultDto { Title = "Track Repair", Description = "Quickly look up a repair status by ID", Category = "Navigation", Url = "/repair-jobs/tracker", Icon = "bi-search" });
 
-            // Customer or Admin
             if (isCustomer || isAdmin)
             {
                 menuItems.Add(new SearchResultDto { Title = "Orders", Description = "View purchase order logs and history", Category = "Navigation", Url = "/orders", Icon = "bi-cart" });
                 menuItems.Add(new SearchResultDto { Title = "New Order", Description = "Create a new product sales order", Category = "Navigation", Url = "/orders/create", Icon = "bi-cart-plus" });
             }
 
-            // Worker or Admin
             if (isWorker || isAdmin)
             {
                 menuItems.Add(new SearchResultDto { Title = "Register Phone", Description = "Add a customer's phone to the database", Category = "Navigation", Url = "/phones/create", Icon = "bi-phone-plus" });
@@ -270,13 +254,11 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                 menuItems.Add(new SearchResultDto { Title = "New Repair Job", Description = "Open a new repair job ticket", Category = "Navigation", Url = "/repair-jobs/create", Icon = "bi-file-earmark-plus" });
             }
 
-            // All Authenticated users who can access repairs (Admin, Worker, Customer)
             if (isAdmin || isWorker || isCustomer)
             {
                 menuItems.Add(new SearchResultDto { Title = "Repair Jobs (Repairs)", Description = "Manage repair jobs and statuses", Category = "Navigation", Url = "/repair-jobs", Icon = "bi-tools" });
             }
 
-            // Administrator only
             if (isAdmin)
             {
                 menuItems.Add(new SearchResultDto { Title = "Customers", Description = "Manage registered customer database", Category = "Navigation", Url = "/customers", Icon = "bi-people" });

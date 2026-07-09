@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MobilePhoneServiceAndSalesSystem.DAL;
 using MobilePhoneServiceAndSalesSystem.Models;
+using MobilePhoneServiceAndSalesSystem.Models.Validation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -214,13 +215,20 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
         [Authorize(Roles = "Admin,Worker")]
         public IActionResult Create(RepairJob repairJob, int[] usedPartIds)
         {
+            AddLifecycleErrors(repairJob.Status, repairJob.ReceivedDate, repairJob.CompletedDate);
+            TryGetValidatedReferences(
+                repairJob.PhoneId,
+                repairJob.TechnicianId,
+                usedPartIds,
+                out var usedParts);
+
             if (!ModelState.IsValid)
             {
                 PopulateLookups(repairJob.PhoneId, repairJob.TechnicianId, usedPartIds);
                 return View(repairJob);
             }
 
-            repairJob.UsedParts = GetUsedParts(usedPartIds);
+            repairJob.UsedParts = usedParts;
 
             _dbContext.RepairJobs.Add(repairJob);
             _dbContext.SaveChanges();
@@ -286,11 +294,38 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
                     return Forbid();
                 }
 
+                AddLifecycleErrors(
+                    repairJob.Status,
+                    existingJob.ReceivedDate,
+                    repairJob.CompletedDate,
+                    existingJob.Status);
+
+                if (!ModelState.IsValid)
+                {
+                    repairJob.PhoneId = existingJob.PhoneId;
+                    repairJob.TechnicianId = existingJob.TechnicianId;
+                    repairJob.ReceivedDate = existingJob.ReceivedDate;
+                    repairJob.UsedParts = existingJob.UsedParts;
+                    PopulateLookups(existingJob.PhoneId, existingJob.TechnicianId, existingJob.UsedParts.Select(p => p.Id));
+                    return View(repairJob);
+                }
+
                 existingJob.Status = repairJob.Status;
                 existingJob.CompletedDate = repairJob.CompletedDate;
                 _dbContext.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
+
+            AddLifecycleErrors(
+                repairJob.Status,
+                repairJob.ReceivedDate,
+                repairJob.CompletedDate,
+                existingJob.Status);
+            TryGetValidatedReferences(
+                repairJob.PhoneId,
+                repairJob.TechnicianId,
+                usedPartIds,
+                out var usedParts);
 
             if (!ModelState.IsValid)
             {
@@ -305,7 +340,7 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             existingJob.LaborCost = repairJob.LaborCost;
             existingJob.PhoneId = repairJob.PhoneId;
             existingJob.TechnicianId = repairJob.TechnicianId;
-            existingJob.UsedParts = GetUsedParts(usedPartIds);
+            existingJob.UsedParts = usedParts;
 
             _dbContext.SaveChanges();
 
@@ -401,15 +436,60 @@ namespace MobilePhoneServiceAndSalesSystem.Controllers
             ViewBag.UsedPartIds = new MultiSelectList(spareParts, "Id", "Label", usedPartIds);
         }
 
-        private List<SparePart> GetUsedParts(IEnumerable<int>? usedPartIds)
+        private void AddLifecycleErrors(
+            MobilePhoneServiceAndSalesSystem.Models.Enums.RepairStatus status,
+            DateTime receivedDate,
+            DateTime? completedDate,
+            MobilePhoneServiceAndSalesSystem.Models.Enums.RepairStatus? currentStatus = null)
         {
+            var errors = currentStatus.HasValue
+                ? RepairJobLifecycleRules.ValidateUpdate(currentStatus.Value, status, receivedDate, completedDate, DateTime.Now)
+                : RepairJobLifecycleRules.ValidateSnapshot(status, receivedDate, completedDate, DateTime.Now);
+
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError(error.Key, error.Message);
+            }
+        }
+
+        private bool TryGetValidatedReferences(
+            int phoneId,
+            int technicianId,
+            IEnumerable<int>? usedPartIds,
+            out List<SparePart> usedParts)
+        {
+            var isValid = true;
+
+            if (!_dbContext.Phones.Any(p => p.Id == phoneId && !p.IsDeleted))
+            {
+                ModelState.AddModelError(nameof(RepairJob.PhoneId), "Select an active device.");
+                isValid = false;
+            }
+
+            if (!_dbContext.Technicians.Any(t => t.Id == technicianId && !t.IsDeleted))
+            {
+                ModelState.AddModelError(nameof(RepairJob.TechnicianId), "Select an active technician.");
+                isValid = false;
+            }
+
             var ids = usedPartIds?.Distinct().ToList() ?? new List<int>();
             if (!ids.Any())
             {
-                return new List<SparePart>();
+                usedParts = new List<SparePart>();
+                return isValid;
             }
 
-            return _dbContext.SpareParts.Where(sp => ids.Contains(sp.Id)).ToList();
+            usedParts = _dbContext.SpareParts
+                .Where(sp => ids.Contains(sp.Id) && !sp.IsDeleted)
+                .ToList();
+
+            if (usedParts.Count != ids.Count)
+            {
+                ModelState.AddModelError("usedPartIds", "One or more selected spare parts are unavailable.");
+                isValid = false;
+            }
+
+            return isValid;
         }
 
         private int? EnsureCustomerLink()

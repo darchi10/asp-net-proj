@@ -8,15 +8,17 @@
     <div class="row g-5 align-items-center">
         <!-- Visual Presentation area -->
         <div class="col-lg-5 text-center">
-            <div class="card bg-dark border border-secondary shadow-lg rounded-4 p-5" style="aspect-ratio: 1/1;">
+            <div class="card component-hero bg-dark border border-secondary shadow-lg rounded-4 p-5 overflow-hidden" style="aspect-ratio: 1/1;">
                 <div class="d-flex h-100 flex-column justify-content-center align-items-center text-secondary position-relative">
-                   <div class="position-absolute top-50 start-50 translate-middle text-secondary opacity-10" style="font-size: 14rem;">
+                   <div class="component-watermark" aria-hidden="true">
                         <i class="bi bi-cpu"></i>
                    </div>
                     <div class="position-relative z-1">
-                        <i class="bi bi-cpu-fill text-primary mb-3" style="font-size: 6rem;"></i>
-                        <h4 class="text-light fw-bold">@Model.Manufacturer</h4>
-                        <span class="text-uppercase fw-bold text-secondary" style="letter-spacing: 2px;">PART-#@Model.Id</span>
+                        <div class="component-icon-shell mx-auto mb-4">
+                            <i class="bi bi-cpu-fill text-primary"></i>
+                        </div>
+                        <h4 class="text-light fw-bold mb-2">@Model.Manufacturer</h4>
+                        <span class="component-part-number text-uppercase fw-bold text-secondary">PART-#@Model.Id</span>
                     </div>
                 </div>
             </div>
@@ -84,3 +86,38 @@
         </div>
     </div>
 </div>
+
+<style>
+    .component-hero {
+        background: linear-gradient(145deg, #1a1a20, #101217) !important;
+    }
+
+    .component-watermark {
+        position: absolute;
+        top: -2rem;
+        right: -1.5rem;
+        color: #6ea8fe;
+        font-size: 10rem;
+        line-height: 1;
+        opacity: 0.07;
+        transform: rotate(-12deg);
+        pointer-events: none;
+    }
+
+    .component-icon-shell {
+        width: 6.5rem;
+        height: 6.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(110, 168, 254, 0.35);
+        border-radius: 1.5rem;
+        background: rgba(13, 110, 253, 0.1);
+        box-shadow: 0 0 30px rgba(13, 110, 253, 0.14);
+        font-size: 3.25rem;
+    }
+
+    .component-part-number {
+        letter-spacing: 0.16rem;
+    }
+</style>
